@@ -77,11 +77,12 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try{
+
     const {username, password} = req.body;
     const user = await User.findOne({username});
     const isPasswordValid = await bcrypt.compare(password, user?.password || "")
 
-    if(!user || isPasswordCorrect){
+    if(!user || !isPasswordValid){
       return res.status(400).json({
         error: "Invalid username or password"
       });
@@ -104,9 +105,11 @@ export const login = async (req, res) => {
 
   catch (error) {
     console.error("Error login controller:", error);
+
     res.status(500).json({
       error: "Internal server error",
     });
+
   }
 };
 
