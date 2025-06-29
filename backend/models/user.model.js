@@ -1,4 +1,4 @@
-import { type } from "express/lib/response";
+import type from "express/lib/response.js";
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({

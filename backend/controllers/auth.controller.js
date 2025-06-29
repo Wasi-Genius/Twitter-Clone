@@ -4,23 +4,25 @@ import { generateTokenAndSetCookie } from "../lib/utils/generateToken.js";
 
 export const signup = async (req, res) => {
   try {
+
     const { fullName, username, email, password } = req.body;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         error: "Invalid email format",
       });
     }
 
-    const existingUser = await User.find({ username });
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({
         error: "Username already exists",
       });
     }
 
-    const existingEmail = await User.find({ email });
+    const existingEmail = await User.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({
         error: "Email is already taken.",
@@ -56,12 +58,16 @@ export const signup = async (req, res) => {
         profilePicture: newUser.profileImg,
         coverImg: newUser.coverImg,
       });
-    } else {
+    } 
+    
+    else {
       res.status(400).json({
         error: "User not created",
       });
     }
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error("Error during signup:", error);
     res.status(500).json({
       error: "Internal server error",
@@ -70,9 +76,38 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  res.json({
-    data: "You hit the login endpoint",
-  });
+  try{
+    const {username, password} = req.body;
+    const user = await User.findOne({username});
+    const isPasswordValid = await bcrypt.compare(password, user?.password || "")
+
+    if(!user || isPasswordCorrect){
+      return res.status(400).json({
+        error: "Invalid username or password"
+      });
+    }
+
+    generateTokenAndSetCookie(user._id, res);
+
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      username: user.username,
+      email: user.email,
+      followers: user.followers,
+      following: user.following,
+      profilePicture: user.profileImg,
+      coverImg: user.coverImg,
+    });
+
+  }
+
+  catch (error) {
+    console.error("Error login controller:", error);
+    res.status(500).json({
+      error: "Internal server error",
+    });
+  }
 };
 
 export const logout = async (req, res) => {
