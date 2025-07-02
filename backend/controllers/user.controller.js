@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
+
 import bcrypt from "bcryptjs";
+import {v2 as cloudinary} from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
     const {username} = req.params; 
@@ -129,7 +131,7 @@ export const getSuggestedUsers = async (req, res) => {
     }
 }
 
-export const updateUserProfile = async (req, res) => {{
+export const updateUserProfile = async (req, res) => {
     const {fullName, email, username, currentPassword, newPassword, bio, link} = req.body; 
     
     let {profileImg, coverImg} = req.body; 
@@ -170,10 +172,32 @@ export const updateUserProfile = async (req, res) => {{
         }
 
         if(profileImg) {
-            
+            const uploadedReponse = await cloudinary.uploader.upload(profileImg)
+            profileImg = uploadedReponse.secure_url;
         }
+
+        if(coverImg) {
+            const uploadedReponse = await cloudinary.uploader.upload(coverImg)
+            coverImg = uploadedReponse.secure_url;
+        }
+
+        user.fullName = fullName || user.fullName;
+        user.email = email || user.email;
+        user.username = username || user.username;
+        user.bio = bio || user.bio;
+        user.link = link || user.link;
+        user.profileImg = profileImg || user.profileImg;
+        user.coverImg = coverImg || user.coverImg;
+
+        user = await user.save();
+
+        // Makes the password null before sending the response 
+        user.password = null; 
+
+        return res.status(200).json(user);
 
     } catch (error) {
         
     }
 }
+    
