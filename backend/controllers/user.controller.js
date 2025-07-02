@@ -139,7 +139,7 @@ export const updateUserProfile = async (req, res) => {
     const userId = req.user._id; 
 
     try {
-        const user = await User.findById(userId); 
+        let user = await User.findById(userId); 
         if (!user) {
             return res.status(404).json({
                 error: "User not found"
@@ -172,11 +172,21 @@ export const updateUserProfile = async (req, res) => {
         }
 
         if(profileImg) {
+
+            if(user.profileImg){
+                await cloudinary.uploader.destroy(user.profileImg.split('/').pop().split('.')[0]);
+            }
+
             const uploadedReponse = await cloudinary.uploader.upload(profileImg)
             profileImg = uploadedReponse.secure_url;
         }
 
         if(coverImg) {
+
+            if(user.coverImg){
+                await cloudinary.uploader.destroy(user.coverImg.split('/').pop().split('.')[0]);
+            }
+
             const uploadedReponse = await cloudinary.uploader.upload(coverImg)
             coverImg = uploadedReponse.secure_url;
         }
@@ -197,7 +207,9 @@ export const updateUserProfile = async (req, res) => {
         return res.status(200).json(user);
 
     } catch (error) {
-        
+        res.status(500).json({
+            error: error.message
+        });
     }
 }
     
