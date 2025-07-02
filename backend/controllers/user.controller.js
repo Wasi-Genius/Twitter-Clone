@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
 
 export const getUserProfile = async (req, res) => {
     const {username} = req.params; 
@@ -49,13 +50,13 @@ export const followUnfollowUser = async (req, res) => {
             await User.findByIdAndUpdate (id, {$pull : {followers: req.user._id}})
             await User.findByIdAndUpdate(req.user._id, {$pull: {following: id}});
             
-            const newNotification = new Notification({
-                from: req.user._id,
-                to: userToModify._id,
-                type: "un follow"
-            });
+            // const newNotification = new Notification({
+            //     from: req.user._id,
+            //     to: userToModify._id,
+            //     type: "unfollow"
+            // });
 
-            await newNotification.save();
+            // await newNotification.save();
             
             res.status(200).json({
                 message: "Unfollowed successfully!"
@@ -84,6 +85,41 @@ export const followUnfollowUser = async (req, res) => {
 
         console.log("Error in getUserProfile:", error);
 
+        res.status(500).json({
+            error: error.message
+        });
+    }
+}
+
+export const getSuggestedUsers = async (req, res) => {
+    try {
+
+        const userId = req.user._id;
+
+        const usersIFollow = await User.findById(userId).select("following");
+
+        const users = await User.aggregate([{
+            $match: {
+                _id: { $ne: userId },
+                _id: { $nin: usersIFollow.following }
+            }
+        }, {
+            $sample: { size: 10 } // Get 10 random users
+        }
+    
+        ])
+
+        const filteredUsers = users.filter(user => !usersIFollow.following.includes(user._id.toString()));
+        const suggestedUsers = filteredUsers.slice(0, 5);
+
+        suggestedUsers.forEach(user =>user.password = null); 
+
+        res.status(200).json({
+            users: suggestedUsers
+        });
+
+    } catch (error) {
+        console.log("Error in getSuggestedUsers:", error);
         res.status(500).json({
             error: error.message
         });
