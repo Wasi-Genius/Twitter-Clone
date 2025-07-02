@@ -92,20 +92,22 @@ export const followUnfollowUser = async (req, res) => {
 }
 
 export const getSuggestedUsers = async (req, res) => {
+    
     try {
-
         const userId = req.user._id;
 
         const usersIFollow = await User.findById(userId).select("following");
 
-        const users = await User.aggregate([{
-            $match: {
-                _id: { $ne: userId },
-                _id: { $nin: usersIFollow.following }
+        const users = await User.aggregate([
+            {
+                $match: {
+                    _id: { $ne: userId }
+                }
+            }, 
+            
+            {
+                $sample: { size: 10 } // Get 10 random users
             }
-        }, {
-            $sample: { size: 10 } // Get 10 random users
-        }
     
         ])
 
