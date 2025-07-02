@@ -9,7 +9,6 @@ import postRoutes from "./routes/post.routes.js";
 
 import connectMongoDB from "./db/connectMongoDB.js";
 
-
 dotenv.config();
 
 cloudinary.config({
@@ -29,7 +28,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-api.use("/api/posts", postRoutes);
+app.use("/api/posts", postRoutes);
 
 app.listen(PORT, () => {
     console.log("Server is running on port", PORT);

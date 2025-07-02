@@ -1,5 +1,5 @@
-import User from "../models/user.model";
-import Post from "../models/post.model";
+import User from "../models/user.model.js";
+import Post from "../models/post.model.js";
 import { v2 as cloudinary } from "cloudinary";
 
 export const createPost = async (req, res) => {
@@ -22,13 +22,14 @@ export const createPost = async (req, res) => {
             img = uploadedResponse.secure_url; 
         }
 
-        const newPost = {
+        const newPost = new Post ({
             user: userId,
-            text: text || "",
-            img: img || ""
-        };
+            text,
+            img,
+        });
 
-        await user.posts.push(newPost);
+        await newPost.save();
+
         res.status(201).json({
             message: "Post created successfully",
             post: newPost
@@ -40,4 +41,4 @@ export const createPost = async (req, res) => {
             error: error.message
         });
     }
-}
+};
