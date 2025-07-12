@@ -4,7 +4,8 @@ import SignUpPage from './pages/auth/signup/SignUpPage';
 import LoginPage from './pages/auth/login/LoginPage';
 import SideBar from './components/common/Sidebar';
 import RightPanel from './components/common/RightPanel';
-import RightPanelSkeleton from './components/skeletons/RightPanelSkeleton';
+import NotificationPage from './pages/notifications/NotificationPage';
+import ProfilePage from './pages/profile/ProfilePage';
 
 
 function App() {
@@ -15,6 +16,8 @@ function App() {
 				<Route path='/' element={<HomePage />} />
 				<Route path='/signup' element={<SignUpPage />} />
 				<Route path='/login' element={<LoginPage />} />
+				<Route path = '/notifications' element = {<NotificationPage />} />
+				<Route path='/profile/:username' element={< ProfilePage />} />
 			</Routes>
 			<RightPanel />
 		</div>
