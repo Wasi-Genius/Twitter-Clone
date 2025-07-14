@@ -7,6 +7,8 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -27,19 +29,29 @@ const SignUpPage = () => {
 					body: JSON.stringify({ email, username, fullName, password }),
 				});
 
-				if(!res.ok) throw new Error("Something went wrong.");
 				const data = await res.json();
-				if(data.error) throw new Error(data.error);
-
+				if(!res.ok) throw new Error(data.error || "Failed to create account");
+				console.log(data);
+				return data; 
 			} catch (error) {
-
+				console.error(error);
+				throw error;
 			}
-		}
+		},
+		onSuccess: () => [
+			toast.success("Account created successfully!"),
+			setFormData({
+				email: "",
+				username: "",
+				fullName: "",
+				password: "",
+			}),
+		]
 	})
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(formData);
+		mutate(formData);
 	};
 
 	const handleInputChange = (e) => {
@@ -115,8 +127,10 @@ const SignUpPage = () => {
 							value={formData.password}
 						/>
 					</label>
-					<button className='btn rounded-full btn-primary text-white'>Sign up</button>
-					{isError && <p className='text-red-500'>Something went wrong</p>}
+					<button className='btn rounded-full btn-primary text-white'>
+						{isPending ? "Signing up..." : "Sign up"}
+					</button>
+					{isError && <p className='text-red-500'>{error.message}</p>}
 				</form>
 
 				<div className='flex flex-col lg:w-2/3 gap-2 mt-4'>
