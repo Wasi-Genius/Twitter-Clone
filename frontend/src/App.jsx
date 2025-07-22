@@ -8,8 +8,36 @@ import NotificationPage from './pages/notifications/NotificationPage';
 import ProfilePage from './pages/profile/ProfilePage';
 
 import { Toaster } from 'react-hot-toast';
+import { useQuery } from '@tanstack/react-query';
+import LoadingSpinner from './components/common/LoadingSpinner';
 
 function App() {
+
+	const {data, isLoading} = useQuery({
+
+		queryKey: ['authUser'],
+		queryFn: async () => {
+			try {
+				const res = await fetch('/api/auth/me');
+				const data = await res.json();
+				if(!res.ok) {
+					throw new Error(data.message || 'Failed to fetch user data');
+				}
+				return data; 
+			} catch (error) {
+				throw new Error(error)
+			}
+		},
+	});
+
+	if (isLoading) {
+		return (
+			<div className = 'flex items-center justify-center h-screen'>
+				<LoadingSpinner size = 'lg'/>
+			</div>
+		)
+	}
+
 	return (
 		<div className='flex max-w-6xl mx-auto'>
 			<SideBar/>
