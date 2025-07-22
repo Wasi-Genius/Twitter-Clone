@@ -1,4 +1,4 @@
-import {Route, Routes} from 'react-router-dom';
+import {Route, Routes, Navigate} from 'react-router-dom';
 import HomePage from './pages/home/HomePage';
 import SignUpPage from './pages/auth/signup/SignUpPage';
 import LoginPage from './pages/auth/login/LoginPage';
@@ -13,13 +13,14 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 
 function App() {
 
-	const {data, isLoading} = useQuery({
+	const {data:authUser, isLoading} = useQuery({
 
 		queryKey: ['authUser'],
 		queryFn: async () => {
 			try {
 				const res = await fetch('/api/auth/me');
 				const data = await res.json();
+				if(data.error) return null;
 				if(!res.ok) {
 					throw new Error(data.message || 'Failed to fetch user data');
 				}
@@ -28,6 +29,7 @@ function App() {
 				throw new Error(error)
 			}
 		},
+		retry: false,
 	});
 
 	if (isLoading) {
@@ -40,16 +42,24 @@ function App() {
 
 	return (
 		<div className='flex max-w-6xl mx-auto'>
-			<SideBar/>
+
+			{authUser && <SideBar/>}
 			<Routes>
-				<Route path='/' element={<HomePage />} />
-				<Route path='/signup' element={<SignUpPage />} />
-				<Route path='/login' element={<LoginPage />} />
-				<Route path = '/notifications' element = {<NotificationPage />} />
-				<Route path='/profile/:username' element={< ProfilePage />} />
+				
+				<Route path='/' element={authUser ? <HomePage /> : <Navigate to ="/login" />} />
+
+				<Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to ="/" />} />
+
+				<Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to ="/" />} />
+
+				<Route path = '/notifications' element = { authUser ? <NotificationPage /> : <Navigate to ="/login" />} />
+				
+				<Route path='/profile/:username' element={authUser ? < ProfilePage />  : <Navigate to ="/login" />} />
+
 			</Routes>
-			<RightPanel />
+			{authUser && <RightPanel />}
 			<Toaster />
+			
 		</div>
 	);
 }
