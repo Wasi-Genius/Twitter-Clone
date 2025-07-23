@@ -24,8 +24,7 @@ const RightPanel = () => {
 		}
 	})
 
-	const temp = 0
-	if (temp === 0 && !isLoading) {
+	if (suggestedUsers.length === 0 && !isLoading) {
 		return (
 			<div className='hidden lg:block my-4 mx-2'>
 				<div className='invisible p-4 rounded-md sticky top-2'>
