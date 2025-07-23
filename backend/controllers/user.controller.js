@@ -109,7 +109,7 @@ export const getSuggestedUsers = async (req, res) => {
             }, 
             
             {
-                $sample: { size: 10 } // Get 10 random users
+                $sample: { size: 4 } // Get 10 random users
             }
     
         ])
