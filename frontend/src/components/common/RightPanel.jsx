@@ -25,16 +25,16 @@ const RightPanel = () => {
 	})
 
 	const temp = 0
-	if(temp === 0 && !isLoading) {
+	if (temp === 0 && !isLoading) {
 		return (
 			<div className='hidden lg:block my-4 mx-2'>
-				<div className='bg-[#16181C] p-4 rounded-md sticky top-2'>
+				<div className='invisible p-4 rounded-md sticky top-2'>
 					<p className='font-bold'>Who to follow:</p>
-					<p className='text-sm text-slate-500'>No suggestions available at the moment.</p>
 				</div>
 			</div>
 		);
 	}
+
 
 	return (
 		<div className='hidden lg:block my-4 mx-2'>
