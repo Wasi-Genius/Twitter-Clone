@@ -8,6 +8,25 @@ import { FaHeart } from "react-icons/fa6";
 
 const NotificationPage = () => {
 
+	const {data: notifications, isLoading} = useQuery({
+		queryKey: ["notifications"],
+		queryFn: async () => {
+			try {
+
+				const res = await fetch("/api/notifications");
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error("Failed to fetch notifications");
+				}
+				return data; 
+
+			} catch (error) {
+				throw error
+			}
+		
+		},
+	})
+
 	const deleteNotifications = () => {
 		alert("All notifications deleted");
 	};
