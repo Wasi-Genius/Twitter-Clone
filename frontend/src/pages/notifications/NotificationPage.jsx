@@ -1,35 +1,63 @@
 import { Link } from "react-router-dom";
-import {useQuery, useMutation} from "@tanstack/react-query";
+import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
 
+import { toast } from "react-toastify";
+
 const NotificationPage = () => {
 
 	const {data: notifications, isLoading} = useQuery({
+		const queryClient = useQueryClient();
 		queryKey: ["notifications"],
 		queryFn: async () => {
 			try {
 
 				const res = await fetch("/api/notifications");
 				const data = await res.json();
+
 				if (!res.ok) {
 					throw new Error("Failed to fetch notifications");
 				}
+
 				return data; 
 
 			} catch (error) {
-				throw error
+				throw new Error("Failed to fetch notifications: " + error.message);
 			}
 		
 		},
 	})
 
-	const deleteNotifications = () => {
-		alert("All notifications deleted");
-	};
+	const {mutate: deleteNotifications} = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch("/api/notifications", {
+					method: "DELETE"
+				});
+
+				const data = await res.json();
+
+				if (!res.ok) {
+					throw new Error(data.error || "Failed to delete notifications");
+				}
+
+				return data; 
+				
+			} catch (error) {
+				throw new Error("Failed to delete notifications: " + error.message);
+			}
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["notifications"] });
+		},
+		onError: (error) => {
+			toast.error(error.message || "Failed to delete notifications");
+		}
+	})
 
 	return (
 		<>
