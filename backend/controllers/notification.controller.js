@@ -32,7 +32,7 @@ export const deleteNotifications = async (req, res) => {
 
         await Notification.deleteMany({ to: userId });
 
-        res.status(200).json({ message: "Notifications deleted successfully" });
+        res.status(200).json({ message: "Notifications deleted successfully!" });
 
     } catch (error) {
         res.status(500).json({
@@ -42,3 +42,27 @@ export const deleteNotifications = async (req, res) => {
     }
 
 }
+
+export const deleteNotificationById = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const notificationId = req.params.id;
+
+		const deletedNotification = await Notification.findOneAndDelete({
+			_id: notificationId,
+			to: userId, // Make sure user only deletes their own notifications
+		});
+
+		if (!deletedNotification) {
+			return res.status(404).json({ message: "Notification not found or not authorized." });
+		}
+
+		res.status(200).json({ message: "Notification deleted successfully!" });
+
+	} catch (error) {
+		res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
+};
