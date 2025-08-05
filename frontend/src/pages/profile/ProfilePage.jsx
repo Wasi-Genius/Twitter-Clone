@@ -17,6 +17,8 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { formatMemberSinceDate } from "../../utils/date/index.js";
 
+import useFollow from "../../hooks/useFollow";
+
 const ProfilePage = () => {
 
 	const [coverImg, setCoverImg] = useState(null);
@@ -27,6 +29,8 @@ const ProfilePage = () => {
 	const profileImgRef = useRef(null);
 
 	const {username} = useParams();
+
+	const {follow, isPending} = useFollow()
 
 	const {data: authUser} = useQuery(
 		{ queryKey: ["authUser"],
@@ -144,9 +148,10 @@ const ProfilePage = () => {
 								{!isMyProfile && (
 									<button
 										className='btn btn-outline rounded-full btn-sm'
-										onClick={() => alert("Followed successfully")}
+										onClick={() => follow(user?._id)}
 									>
-										Follow
+										{isPending ? "Following..." : user?.followers.includes(authUser._id) ? "Unfollow" : "Follow"}
+										
 									</button>
 								)}
 								{(coverImg || profileImg) && (
