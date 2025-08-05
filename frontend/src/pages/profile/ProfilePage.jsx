@@ -28,7 +28,10 @@ const ProfilePage = () => {
 
 	const {username} = useParams();
 
-	const isMyProfile = true;
+	const {data: authUser} = useQuery(
+		{ queryKey: ["authUser"],
+		  queryFn: async () => {}
+		})
 
 	const {data: user, isLoading, refetch, isRefetching} = useQuery({
 		queryKey:["userProfile", username],
@@ -49,8 +52,9 @@ const ProfilePage = () => {
 
 	})
 
-	const memberSince = formatMemberSinceDate(user?.createdAt)
 
+	const isMyProfile = authUser._id === user?._id;
+	const memberSince = formatMemberSinceDate(user?.createdAt)
 
 	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
