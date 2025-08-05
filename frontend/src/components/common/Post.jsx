@@ -12,11 +12,18 @@ import LoadingSpinner from "./LoadingSpinner";
 import { formatPostDate } from "../../utils/date";
 
 const Post = ({ post }) => {
+
 	const [comment, setComment] = useState("");
-	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+	const { data: authUser } = useQuery({ 
+		queryKey: ["authUser"],
+		queryFn: async () => {}
+	 });
 	const queryClient = useQueryClient();
 	const postOwner = post.user;
-	const isLiked = post.likes.includes(authUser._id);
+
+	const [likes, setLikes] = useState(post.likes || []);
+	const isLiked = likes.includes(authUser._id?.toString());
+
 
 	const isMyPost = authUser._id === post.user._id;
 
@@ -61,20 +68,27 @@ const Post = ({ post }) => {
 				throw new Error(error);
 			}
 		},
-		onSuccess: (updatedLikes) => {
-			// this is not the best UX, bc it will refetch all posts
-			// queryClient.invalidateQueries({ queryKey: ["posts"] });
+		onSuccess: (data, updatedLikes) => {
+			setLikes(data.updatedLikes); // ✅ set local state directly
 
-			// instead, update the cache directly for that post
+			// Optionally also update cache if you want consistent state elsewhere
 			queryClient.setQueryData(["posts"], (oldData) => {
 				return oldData.map((p) => {
-					if (p._id === post._id) {
-						return { ...p, likes: updatedLikes };
-					}
-					return p;
+				if (p._id === post._id) {
+					return { ...p, likes: updatedLikes };
+				}
+				return p;
 				});
 			});
 		},
+
+		onMutate: () => {
+			const updatedLikes = isLiked
+				? likes.filter((id) => id !== authUser._id)
+				: [...likes, authUser._id];
+			setLikes(updatedLikes);
+		},
+
 		onError: (error) => {
 			toast.error(error.message);
 		},
@@ -242,7 +256,7 @@ const Post = ({ post }) => {
 										isLiked ? "text-pink-500" : "text-slate-500"
 									}`}
 								>
-									{post.likes.length}
+									{likes.length}
 								</span>
 							</div>
 						</div>

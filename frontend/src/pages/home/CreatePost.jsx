@@ -10,7 +10,10 @@ const CreatePost = () => {
 	const [img, setImg] = useState(null);
 	const imgRef = useRef(null)
 
-	const {data:authUser} = useQuery({queryKey: ['authUser']});
+	const {data:authUser} = useQuery({
+		queryKey: ['authUser'],
+		queryFn: async () => {}
+	});
 	const queryClient = useQueryClient();
 
 

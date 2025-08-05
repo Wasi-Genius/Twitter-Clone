@@ -11,7 +11,9 @@ import SunCloud from "../svgs/SunCloud.jsx";
 
 const Sidebar = () => {
   const queryClient = useQueryClient();
-  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { data: authUser } = useQuery({ 
+    queryKey: ["authUser"],
+    queryFn: async () => {} });
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
