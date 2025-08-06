@@ -12,7 +12,7 @@ const CreatePost = () => {
 
 	const {data:authUser} = useQuery({
 		queryKey: ['authUser'],
-		queryFn: async () => {}
+		//queryFn: async () => {}
 	});
 	const queryClient = useQueryClient();
 

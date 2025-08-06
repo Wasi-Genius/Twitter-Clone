@@ -31,6 +31,8 @@ const LoginPage = () => {
 					if (!res.ok) {
 						throw new Error(data.error || "Login failed");
 					}
+
+					return data.user;
 			
 			} catch (error) {
 						throw new Error(error);

@@ -13,7 +13,8 @@ const Sidebar = () => {
   const queryClient = useQueryClient();
   const { data: authUser } = useQuery({ 
     queryKey: ["authUser"],
-    queryFn: async () => {} });
+    //queryFn: async () => {} 
+  });
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {

@@ -16,7 +16,7 @@ const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
 	const { data: authUser } = useQuery({ 
 		queryKey: ["authUser"],
-		queryFn: async () => {}
+		//queryFn: async () => {}
 	 });
 	const queryClient = useQueryClient();
 	const postOwner = post.user;
