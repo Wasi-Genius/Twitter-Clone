@@ -16,6 +16,9 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+
 
 const ProfilePage = () => {
   // ---------------------- State ----------------------
@@ -32,6 +35,7 @@ const ProfilePage = () => {
 
   // ---------------------- Custom Hooks ----------------------
   const { follow, isPending } = useFollow();
+  const queryClient = useQueryClient();
 
   // ---------------------- Queries ----------------------
 
@@ -63,6 +67,58 @@ const ProfilePage = () => {
     },
   });
 
+  const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
+    mutationFn: async () => {
+
+      try {
+        const res = await fetch(`/api/users/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            coverImg,
+            profileImg,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Something went wrong');
+        }
+
+        return data; 
+
+      } catch (error) {
+        console.error("[updateProfile] Error:", error);
+        throw new Error(error.message || 'Something went wrong');
+      }
+    },
+
+    onSuccess: (updatedUser) => {
+      const username = updatedUser?.username;
+      if (!username) {
+        console.warn("[updateProfile] No username found in updated user.");
+      } else {
+        console.log(`[updateProfile] Invalidating queries for userProfile: ${username}`);
+      }
+
+      toast.success("Profile updated successfully");
+
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['authUser'] }),
+        queryClient.invalidateQueries({ queryKey: ['userProfile', username] }),
+      ]);
+    },
+
+    onError: (error) => {
+      console.error("[updateProfile] Mutation error:", error);
+      toast.error(error.message);
+    }
+  });
+
+
   // ---------------------- Derived Values ----------------------
   const isMyProfile = authUser?._id === user?._id;
   const memberSince = formatMemberSinceDate(user?.createdAt);
@@ -84,6 +140,15 @@ const ProfilePage = () => {
   useEffect(() => {
     refetch();
   }, [username, refetch]);
+
+  const normalizeLink = (url) => {
+    if (!url) return "";
+      if (!/^https?:\/\//i.test(url)) {
+        return "https://" + url;
+      }
+      return url;
+  };
+
 
   // ---------------------- JSX ----------------------
   return (
@@ -149,7 +214,7 @@ const ProfilePage = () => {
 
           {/* Buttons (Edit / Follow / Update) */}
           <div className='flex justify-end px-4 mt-5'>
-            {isMyProfile && <EditProfileModal />}
+            {isMyProfile && <EditProfileModal authUser = {authUser} />}
 
             {!isMyProfile && (
               <button
@@ -166,9 +231,9 @@ const ProfilePage = () => {
             {(coverImg || profileImg) && (
               <button
                 className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-                onClick={() => alert("Profile updated successfully")}
+                onClick={() => updateProfile()}
               >
-                Update
+                {isUpdatingProfile ? "Updating..." : "Update"}
               </button>
             )}
           </div>
@@ -187,7 +252,7 @@ const ProfilePage = () => {
                 <div className='flex gap-1 items-center '>
                   <FaLink className='w-3 h-3 text-slate-500' />
                   <a
-                    href={user.link}
+                    href={normalizeLink(user.link)}
                     target='_blank'
                     rel='noreferrer'
                     className='text-sm text-blue-500 hover:underline'
