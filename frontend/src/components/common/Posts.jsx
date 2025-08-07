@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 const Posts = ({ feedType, username, userId }) => {
+
   const getPostEndpoint = () => {
     switch (feedType) {
       case "forYou":
@@ -17,6 +18,7 @@ const Posts = ({ feedType, username, userId }) => {
       default:
         return "/api/posts/all";
     }
+    
   };
 
   const POST_ENDPOINT = getPostEndpoint();
@@ -72,4 +74,5 @@ const Posts = ({ feedType, username, userId }) => {
     </>
   );
 };
+
 export default Posts;
