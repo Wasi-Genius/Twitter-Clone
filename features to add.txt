@@ -1,0 +1,10 @@
+add error message on screen for comments
+Seeing following in profile 
+Seeing followers in profile 
+retweeting 
+bookmarks
+seeing what post a user liked along with also seeing their profile
+adding emojis to posts 
+allowing viewing of an image of an post
+add ability to add images along with a reply 
+timestamps to comments
