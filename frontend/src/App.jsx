@@ -1,67 +1,94 @@
-import {Route, Routes, Navigate} from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { useQuery } from '@tanstack/react-query';
+
 import HomePage from './pages/home/HomePage';
 import SignUpPage from './pages/auth/signup/SignUpPage';
 import LoginPage from './pages/auth/login/LoginPage';
-import SideBar from './components/common/Sidebar';
-import RightPanel from './components/common/RightPanel';
 import NotificationPage from './pages/notifications/NotificationPage';
 import ProfilePage from './pages/profile/ProfilePage';
 
-import { Toaster } from 'react-hot-toast';
-import { useQuery } from '@tanstack/react-query';
+import SideBar from './components/common/Sidebar';
+import RightPanel from './components/common/RightPanel';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 function App() {
-
-	const {data:authUser, isLoading} = useQuery({
-
+	// Query to fetch the currently authenticated user
+	const { data: authUser, isLoading } = useQuery({
 		queryKey: ['authUser'],
+		
 		queryFn: async () => {
-			try {
-				const res = await fetch('/api/auth/me');
-				const data = await res.json();
-				if(data.error) return null;
-				if(!res.ok) {
-					throw new Error(data.error || 'Failed to fetch user data');
-				}
-				return data; 
-			} catch (error) {
-				throw new Error(error)
+			const res = await fetch('/api/auth/me');
+			const data = await res.json();
+
+			// If backend sends an error in JSON response, treat as unauthenticated
+			if (data.error) return null;
+
+			// Handle failed response (non-2xx status)
+			if (!res.ok) {
+				throw new Error(data.error || 'Failed to fetch user data');
 			}
+
+			return data;
 		},
-		retry: false,
+		retry: false, // Do not retry the request if it fails
 	});
 
+	// Show loading spinner while user data is being fetched
 	if (isLoading) {
 		return (
-			<div className = 'flex items-center justify-center h-screen'>
-				<LoadingSpinner size = 'lg'/>
+			<div className='flex items-center justify-center h-screen'>
+				<LoadingSpinner size='lg' />
 			</div>
-		)
+		);
 	}
 
 	return (
 		<div className='flex max-w-6xl mx-auto'>
 
-			{authUser && <SideBar/>}
+			{/* Sidebar (only visible when user is logged in) */}
+			{authUser && <SideBar />}
+
+			{/* Define application routes */}
 			<Routes>
-				
-				<Route path='/' element={authUser ? <HomePage /> : <Navigate to ="/login" />} />
+				{/* Home Page - only accessible when logged in */}
+				<Route
+					path='/'
+					element={authUser ? <HomePage /> : <Navigate to='/login' />}
+				/>
 
-				<Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to ="/" />} />
+				{/* Sign Up - redirect to home if already logged in */}
+				<Route
+					path='/signup'
+					element={!authUser ? <SignUpPage /> : <Navigate to='/' />}
+				/>
 
-				<Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to ="/" />} />
+				{/* Login - redirect to home if already logged in */}
+				<Route
+					path='/login'
+					element={!authUser ? <LoginPage /> : <Navigate to='/' />}
+				/>
 
-				<Route path = '/notifications' element = { authUser ? <NotificationPage /> : <Navigate to ="/login" />} />
-				
-				<Route path='/profile/:username' element={authUser ? < ProfilePage />  : <Navigate to ="/login" />} />
+				{/* Notifications - protected route */}
+				<Route
+					path='/notifications'
+					element={authUser ? <NotificationPage /> : <Navigate to='/login' />}
+				/>
 
+				{/* Profile - protected route */}
+				<Route
+					path='/profile/:username'
+					element={authUser ? <ProfilePage /> : <Navigate to='/login' />}
+				/>
 			</Routes>
+
+			{/* Right Panel (only visible when user is logged in) */}
 			{authUser && <RightPanel />}
+
+			{/* Toast notifications container */}
 			<Toaster />
-			
 		</div>
 	);
 }
 
-export default App; 
+export default App;

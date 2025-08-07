@@ -10,3 +10,4 @@ add ability to add images along with a reply
 timestamps to comments
 notification if someone commented, retweeted, or bookmarked a post
 check if backend database is actually getting updated 
+always show 4 people on the sidebar if there are 4 or more users but of course this rule does not have to be followed if the users are already followed 
