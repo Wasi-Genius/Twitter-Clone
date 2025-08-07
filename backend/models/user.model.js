@@ -1,4 +1,3 @@
-import type from "express/lib/response.js";
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -28,8 +27,7 @@ const userSchema = new mongoose.Schema({
 
     followers: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
             default: []
         }
 
@@ -37,8 +35,7 @@ const userSchema = new mongoose.Schema({
 
     following: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
             default: []
         }
 
@@ -66,11 +63,24 @@ const userSchema = new mongoose.Schema({
 
     likedPosts: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Post",
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
             default: []
         }
-    ]
+    ],
+
+    retweetedPosts: [
+        {
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+            default: []
+        }
+    ],
+
+    bookmarks: [
+        {
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+            default: []
+        }
+    ],
 
 },{timestamps: true});
 

@@ -1,26 +1,56 @@
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
 
-const notificationSchema = new mongoose.Schema({
-    from:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+// Expire notifications after 15 days (in seconds)
+const TTL_SECONDS = 15 * 24 * 60 * 60;
+
+const notificationSchema = new mongoose.Schema(
+  {
+    // User who triggered the notification
+    from: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    to:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+
+    // User who receives the notification
+    to: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
     },
+
+    // Type of notification
     type: {
-        type: String,
-        enum: ["follow", "like"],
-        required: true
+      type: String,
+      enum: ["follow", "like", "comment", "retweet", "bookmark"],
+      required: true,
     },
+
+    // Whether the recipient has read the notification
     read: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
-}, { timestamps: true });
+
+    // Extra data depending on the notification type
+    meta: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+
+    // For TTL indexing
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      expires: TTL_SECONDS,
+    },
+  },
+  {
+    collection: "notifications",
+  }
+);
 
 const Notification = mongoose.model("Notification", notificationSchema);
+
 export default Notification;
