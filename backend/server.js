@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import {v2 as cloudinary} from "cloudinary";
 
+//Routes
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/post.routes.js";
@@ -12,12 +13,15 @@ import connectMongoDB from "./db/connectMongoDB.js";
 
 dotenv.config();
 
+// Image handling with Cloudinary 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+
+// Initialize express app and connect to MongoDB
 const app = express();
 const PORT = process.env.PORT || 5000;
 
