@@ -15,7 +15,7 @@ const RightPanel = () => {
 				const data = await res.json();
 
 				if (!res.ok) {
-					throw new Error(data.message || "Failed to fetch suggested users")
+					throw new Error(data.error || "Failed to fetch suggested users")
 				}
 
 				return data.users; 

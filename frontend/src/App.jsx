@@ -22,7 +22,7 @@ function App() {
 				const data = await res.json();
 				if(data.error) return null;
 				if(!res.ok) {
-					throw new Error(data.message || 'Failed to fetch user data');
+					throw new Error(data.error || 'Failed to fetch user data');
 				}
 				return data; 
 			} catch (error) {
