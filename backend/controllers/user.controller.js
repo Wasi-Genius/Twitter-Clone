@@ -68,19 +68,24 @@ export const followUnfollowUser = async (req, res) => {
 export const getSuggestedUsers = async (req, res) => {
     try {
         const userId = req.user._id;
-        const usersIFollow = await User.findById(userId).select("following");
 
+        // Get the list of users you follow
+        const { following } = await User.findById(userId).select("following");
+
+        // Build an exclusion list: yourself + people you follow
+        const excludedUserIds = [userId, ...following];
+
+        // Fetch up to 4 random users NOT in the exclusion list
         const users = await User.aggregate([
-            { $match: { _id: { $ne: userId } } },
-            { $sample: { size: 4 } },
+            { $match: { _id: { $nin: excludedUserIds } } },
+            { $sample: { size: 4 } }
         ]);
 
-        const filteredUsers = users.filter(
-            (user) => !usersIFollow.following.includes(user._id.toString())
-        );
-        const suggestedUsers = filteredUsers.slice(0, 5);
-
-        suggestedUsers.forEach((user) => (user.password = null));
+        // Remove password field just in case
+        const suggestedUsers = users.map(user => {
+            user.password = null;
+            return user;
+        });
 
         res.status(200).json({ users: suggestedUsers });
     } catch (error) {
@@ -88,6 +93,7 @@ export const getSuggestedUsers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Update user profile info, including password and images
 export const updateUserProfile = async (req, res) => {
