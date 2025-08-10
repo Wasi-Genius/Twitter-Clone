@@ -8,7 +8,7 @@ import { FaHeart } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 
 
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const NotificationPage = () => {
 
