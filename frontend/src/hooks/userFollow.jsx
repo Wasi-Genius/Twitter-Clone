@@ -1,41 +1,52 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
+/*
+
+ * Custom hook for following/unfollowing a user.
+ * Handles API call, error handling, and React Query cache updates.
+ 
+*/
 const useFollow = () => {
+	const queryClient = useQueryClient();
 
-    const queryClient = useQueryClient();
+	const { mutate: follow, isPending } = useMutation({
+		// --- API Call ---
+		mutationFn: async (userId) => {
+			const res = await fetch(`/api/users/follow/${userId}`, {
+				method: "POST",
+			});
 
-    const {mutate:follow, isPending} = useMutation({
-        mutationFn: async(userId) => {
-            try {
-                const res = await fetch(`/api/users/follow/${userId}`, {
-                    method: 'POST',
-                })
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data.error || "Something went wrong");
+			}
+			return data;
+		},
 
-                const data = await res.json();
-                if (!res.ok) {
-                    throw new Error(data.error || 'Something went wrong');
-                }
-                return data; 
-            } catch (error) {
-                throw new Error(error.message || 'Something went wrong');
-            }
-        },
-        onSuccess: () => {
-            Promise.all([
-                queryClient.invalidateQueries({queryKey: ['suggestedUsers']}),
-                queryClient.invalidateQueries({queryKey: ['authUser']}),
-                queryClient.invalidateQueries({queryKey: ['userProfile']}),
-            ])
-        
-        },
-        onError: (error) => {
-            toast.error(error.message)
-        }
-    })
+		// --- On Success: Update UI ---
+		onSuccess: () => {
+			// Invalidate all queries that may be affected by follow changes
+			const queriesToInvalidate = [
+				["suggestedUsers"], // Updates suggested users list
+				["authUser"], // Updates follower/following count
+				["userProfile"], // Updates the viewed profile
+			];
 
-    return { follow, isPending }
+			Promise.all(
+				queriesToInvalidate.map((queryKey) =>
+					queryClient.invalidateQueries({ queryKey })
+				)
+			);
+		},
 
-}
+		// --- On Error: Show Notification ---
+		onError: (error) => {
+			toast.error(error.message || "Something went wrong");
+		},
+	});
+
+	return { follow, isPending };
+};
 
 export default useFollow;

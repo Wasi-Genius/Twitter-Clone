@@ -2,19 +2,23 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
+// Icons
 import { MdHomeFilled } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 
+// Assets
 import SunCloud from "../svgs/SunCloud.jsx";
 
 const Sidebar = () => {
+  // --- React Query Setup ---
   const queryClient = useQueryClient();
-  const { data: authUser } = useQuery({ 
-    queryKey: ["authUser"],
-  });
 
+  // Fetch the authenticated user (no refetch options here → default)
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+
+  // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/auth/logout", { method: "POST" });
@@ -22,6 +26,7 @@ const Sidebar = () => {
       if (!res.ok) throw new Error(data.error || "Something went wrong");
     },
     onSuccess: () => {
+      // Remove cached auth user so UI updates immediately
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
     onError: () => {
@@ -29,21 +34,20 @@ const Sidebar = () => {
     },
   });
 
+  // Shared link styles
   const linkBase =
     "flex gap-3 items-center hover:bg-stone-900 transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer";
 
   return (
     <div className="md:flex-[2_2_0] w-16 max-w-48">
       <div className="sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full">
-
-        {/* Logo */}
+        {/* --- Logo --- */}
         <Link to="/" className="flex justify-center md:justify-start">
           <SunCloud className="px-2 w-12 h-12 rounded-full fill-white hover:bg-stone-900" />
         </Link>
 
-        {/* Navigation Links */}
+        {/* --- Navigation Links --- */}
         <ul className="flex flex-col gap-3 mt-4">
-
           <li className="flex justify-center md:justify-start">
             <Link to="/" className={linkBase}>
               <MdHomeFilled className="w-8 h-8" />
@@ -58,29 +62,30 @@ const Sidebar = () => {
             </Link>
           </li>
 
-          <li className="flex justify-center md:justify-start">
-            <Link to={`/profile/${authUser?.username}`} className={linkBase}>
-              <FaUser className="w-6 h-6" />
-              <span className="text-lg hidden md:block">Profile</span>
-            </Link>
-          </li>
-
+          {authUser && (
+            <li className="flex justify-center md:justify-start">
+              <Link to={`/profile/${authUser.username}`} className={linkBase}>
+                <FaUser className="w-6 h-6" />
+                <span className="text-lg hidden md:block">Profile</span>
+              </Link>
+            </li>
+          )}
         </ul>
 
-        {/* Auth User Section */}
+        {/* --- Authenticated User Section --- */}
         {authUser && (
           <Link
             to={`/profile/${authUser.username}`}
             className="mt-auto mb-10 flex gap-2 items-start transition-all duration-300 hover:bg-[#181818] py-2 px-4 rounded-full"
           >
-            {/* Avatar */}
+            {/* Avatar (hidden on mobile) */}
             <div className="avatar hidden md:inline-flex">
               <div className="w-8 rounded-full">
                 <img src={authUser.profileImg || "/avatar-placeholder.png"} />
               </div>
             </div>
 
-            {/* User Info and Logout */}
+            {/* User Info + Logout Icon */}
             <div className="flex justify-between flex-1">
               <div className="hidden md:block">
                 <p className="text-white font-bold text-sm w-20 truncate">
@@ -96,7 +101,6 @@ const Sidebar = () => {
                   logout();
                 }}
               />
-              
             </div>
           </Link>
         )}
