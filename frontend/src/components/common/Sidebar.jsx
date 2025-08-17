@@ -13,7 +13,6 @@ const Sidebar = () => {
   const queryClient = useQueryClient();
   const { data: authUser } = useQuery({ 
     queryKey: ["authUser"],
-    //queryFn: async () => {} 
   });
 
   const { mutate: logout } = useMutation({
@@ -44,24 +43,28 @@ const Sidebar = () => {
 
         {/* Navigation Links */}
         <ul className="flex flex-col gap-3 mt-4">
+
           <li className="flex justify-center md:justify-start">
             <Link to="/" className={linkBase}>
               <MdHomeFilled className="w-8 h-8" />
               <span className="text-lg hidden md:block">Home</span>
             </Link>
           </li>
+
           <li className="flex justify-center md:justify-start">
             <Link to="/notifications" className={linkBase}>
               <IoNotifications className="w-6 h-6" />
               <span className="text-lg hidden md:block">Notifications</span>
             </Link>
           </li>
+
           <li className="flex justify-center md:justify-start">
             <Link to={`/profile/${authUser?.username}`} className={linkBase}>
               <FaUser className="w-6 h-6" />
               <span className="text-lg hidden md:block">Profile</span>
             </Link>
           </li>
+
         </ul>
 
         {/* Auth User Section */}
@@ -85,6 +88,7 @@ const Sidebar = () => {
                 </p>
                 <p className="text-slate-500 text-sm">@{authUser.username}</p>
               </div>
+
               <BiLogOut
                 className="w-5 h-5 cursor-pointer"
                 onClick={(e) => {
@@ -92,6 +96,7 @@ const Sidebar = () => {
                   logout();
                 }}
               />
+              
             </div>
           </Link>
         )}
