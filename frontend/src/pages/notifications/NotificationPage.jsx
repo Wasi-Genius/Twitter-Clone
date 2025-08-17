@@ -1,165 +1,148 @@
 import { Link } from "react-router-dom";
-import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
-
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
-
-
 import { toast } from "react-hot-toast";
 
 const NotificationPage = () => {
+  const queryClient = useQueryClient();
 
-	const queryClient = useQueryClient()
+  /**
+   * Query: Fetch notifications
+   */
+  const { data, isLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      const res = await fetch("/api/notifications");
+      const json = await res.json();
 
-	const {data, isLoading} = useQuery({
-		queryKey: ["notifications"],
-		queryFn: async () => {
-			try {
+      if (!res.ok) throw new Error(json.error || "Failed to fetch notifications");
+      return json;
+    },
+  });
 
-				const res = await fetch("/api/notifications");
-				const data = await res.json();
+  /**
+   * Mutation: Delete ALL notifications
+   */
+  const { mutate: deleteNotifications } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/notifications", { method: "DELETE" });
+      const json = await res.json();
 
-				if (!res.ok) {
-					throw new Error("Failed to fetch notifications");
-				}
+      if (!res.ok) throw new Error(json.error || "Failed to delete notifications");
+      return json;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete notifications");
+    },
+  });
 
-				return data; 
+  /**
+   * Mutation: Delete ONE notification by ID
+   */
+  const { mutate: deleteNotificationById } = useMutation({
+    mutationFn: async (id) => {
+      const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
+      const json = await res.json();
 
-			} catch (error) {
-				throw new Error("Failed to fetch notifications: " + error.message);
-			}
-		
-		},
-	})
+      if (!res.ok) throw new Error(json.error || "Failed to delete notification");
+      return json;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete notification");
+    },
+  });
 
-	const {mutate: deleteNotifications} = useMutation({
-		mutationFn: async () => {
-			try {
-				const res = await fetch("/api/notifications", {
-					method: "DELETE"
-				});
+  const handleDeleteNotification = (id) => deleteNotificationById(id);
 
-				const data = await res.json();
+  return (
+    <div className="flex-[4_4_0] border-l border-r border-gray-700 min-h-screen">
+      {/* Header Section */}
+      <div className="flex justify-between items-center p-4 border-b border-gray-700">
+        <p className="font-bold">Notifications</p>
 
-				if (!res.ok) {
-					throw new Error(data.error || "Failed to delete notifications");
-				}
+        {/* Dropdown Settings */}
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="m-1">
+            <IoSettingsOutline className="w-4" />
+          </div>
+          <ul
+            tabIndex={0}
+            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            <li>
+              <button onClick={deleteNotifications}>
+                Delete all notifications
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-				return data; 
-				
-			} catch (error) {
-				throw new Error("Failed to delete notifications: " + error.message);
-			}
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["notifications"] });
-		},
-		onError: (error) => {
-			toast.error(error.message || "Failed to delete notifications");
-		}
-	})
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex justify-center h-full items-center">
+          <LoadingSpinner size="lg" />
+        </div>
+      )}
 
-	const { mutate: deleteNotificationById } = useMutation({
-		mutationFn: async (id) => {
-			const res = await fetch(`/api/notifications/${id}`, {
-				method: "DELETE",
-			});
+      {/* Empty State */}
+      {!isLoading && data?.notifications?.length === 0 && (
+        <div className="text-center p-4 font-bold">No Notifications</div>
+      )}
 
-			const data = await res.json();
+      {/* Notifications List */}
+      {data?.notifications?.map((notification) => (
+        <div
+          className="border-b border-gray-700"
+          key={notification._id}
+        >
+          <div className="flex gap-2 p-4 items-center">
+            {/* Notification Icon */}
+            {notification.type === "follow" && (
+              <FaUser className="w-7 h-7 text-primary" />
+            )}
+            {notification.type === "like" && (
+              <FaHeart className="w-7 h-7 text-red-500" />
+            )}
 
-			if (!res.ok) {
-				throw new Error(data.error || "Failed to delete notification");
-			}
+            {/* Link to Profile */}
+            <Link to={`/profile/${notification.from.username}`} className="flex items-center gap-2">
+              <div className="avatar">
+                <div className="w-8 rounded-full">
+                  <img
+                    src={notification.from.profileImg || "/avatar-placeholder.png"}
+                    alt="profile"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-1">
+                <span className="font-bold">@{notification.from.username}</span>
+                {notification.type === "follow"
+                  ? "followed you"
+                  : "liked your post"}
+              </div>
+            </Link>
 
-			return data;
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["notifications"] });
-		},
-		onError: (error) => {
-			toast.error(error.message || "Failed to delete notification");
-		},
-	});
-
-	const handleDeleteNotification = (id) => {
-		deleteNotificationById(id);
-	};
-
-	return (
-		<>
-
-			<div className='flex-[4_4_0] border-l border-r border-gray-700 min-h-screen'>
-
-				<div className='flex justify-between items-center p-4 border-b border-gray-700'>
-
-					<p className='font-bold'>Notifications</p>
-
-					<div className='dropdown '>
-
-						<div tabIndex={0} role='button' className='m-1'>
-							<IoSettingsOutline className='w-4' />
-						</div>
-
-						<ul
-							tabIndex={0}
-							className='dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52'
-						>
-							<li>
-								<a onClick={deleteNotifications}>Delete all notifications</a>
-							</li>
-						</ul>
-
-					</div>
-				</div>
-
-				{isLoading && (
-					<div className='flex justify-center h-full items-center'>
-						<LoadingSpinner size='lg' />
-					</div>
-				)}
-				
-				{!isLoading && data?.notifications?.length === 0 && (
-					<div className="text-center p-4 font-bold">No Notifications</div>
-				)}
-				
-				
-				{data?.notifications?.map((notification) => (
-
-					<div className='border-b border-gray-700' key={notification._id}>
-
-						<div className="flex gap-2 p-4 items-center">
-
-							{notification.type === "follow" && <FaUser className='w-7 h-7 text-primary' />}
-							{notification.type === "like" && <FaHeart className='w-7 h-7 text-red-500' />}
-							<Link to={`/profile/${notification.from.username}`}>
-
-								<div className='avatar'>
-									<div className='w-8 rounded-full'>
-										<img src={notification.from.profileImg || "/avatar-placeholder.png"} />
-									</div>
-								</div>
-
-								<div className='flex gap-1'>
-									<span className='font-bold'>@{notification.from.username}</span>{" "}
-									{notification.type === "follow" ? "followed you" : "liked your post"}
-								</div>
-
-							</Link>
-
-							<FaTrash
-								className="w-5 h-5 text-gray-400 hover:text-red-500 cursor-pointer ml-auto"
-								onClick={() => handleDeleteNotification(notification._id)}
-							/>
-
-
-						</div>
-					</div>
-				))}
-			</div>
-		</>
-	);
+            {/* Delete Button */}
+            <FaTrash
+              className="w-5 h-5 text-gray-400 hover:text-red-500 cursor-pointer ml-auto"
+              onClick={() => handleDeleteNotification(notification._id)}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 };
+
 export default NotificationPage;
