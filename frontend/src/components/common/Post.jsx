@@ -38,7 +38,7 @@ const Post = ({ post }) => {
 			body: body ? JSON.stringify(body) : undefined,
 		});
 		const data = await res.json();
-		if (!res.ok) throw new Error(data.error || "Something went wrong");
+		if (!res.ok) throw new Error(data.error || data.message || "Something went wrong");
 		return data;
 	};
 
@@ -72,11 +72,14 @@ const Post = ({ post }) => {
 		mutationFn: () =>
 			apiRequest(`/api/posts/comment/${post._id}`, "POST", { text: comment }),
 		onSuccess: () => {
+
 			toast.success("Commented successfully");
 			setComment("");
 			queryClient.invalidateQueries({ queryKey: ["posts"] });
 		},
-		onError: (error) => toast.error(error.message),
+		onError: (error) => {
+			toast.error(error.message || "Something went wrong");
+		},
 	});
 
 	// ----- HANDLERS -----
@@ -84,7 +87,12 @@ const Post = ({ post }) => {
 	const handleLikePost = () => !isLiking && likePost();
 	const handlePostComment = (e) => {
 		e.preventDefault();
-		if (!isCommenting && comment.trim()) commentPost();
+		const trimmed = comment.trim();
+		if (!trimmed) {
+			toast.error("Comment cannot be empty"); 
+			return;
+		}
+		if (!isCommenting) commentPost(trimmed);
 	};
 
 	return (
@@ -177,7 +185,7 @@ const Post = ({ post }) => {
 								<div className="flex flex-col gap-3 max-h-60 overflow-auto">
 									{post.comments.length === 0 ? (
 										<p className="text-sm text-slate-500">
-											No comments yet. Be the first to comment.
+											Be the first to comment.
 										</p>
 									) : (
 										post.comments.map((comment) => (
