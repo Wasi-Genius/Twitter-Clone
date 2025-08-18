@@ -24,7 +24,7 @@ const Post = ({ post }) => {
   const isLiked = likes.includes(authUser._id?.toString());
   const formattedDate = formatPostDate(post.createdAt);
 
-  /**
+  /*
    * Utility function for API calls
    * Helps avoid repeating try/catch/fetch boilerplate
    */
@@ -112,6 +112,39 @@ const Post = ({ post }) => {
 			commentPost(trimmed);
 		}
 	};
+
+  // ----- REPOST -----
+  const { mutate: rePost, isPending: isReposting } = useMutation({
+    mutationFn: async (text = "") => {
+
+      console.log("➡️ Attempting repost for post:", post._id, "with text:", text);
+
+      const res = await apiRequest(
+        `/api/posts/${post._id}/repost`,
+        "POST",
+        { text }
+      );
+      console.log("✅ Repost API response:", res);
+      return res;
+    },
+
+    onSuccess: (data) => {
+
+      console.log("🎉 Repost successful:", data);
+      toast.success("Reposted successfully!");
+
+      // if you want the repost to appear right away, invalidate queries or update local state:
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+
+    onError: (error) => {
+      console.error("❌ Error while reposting:", error);
+      toast.error(error.message || "Failed to repost");
+    },
+  });
+
+  const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
+  const [repostText, setRepostText] = useState("");
 
   return (
     <div className="flex gap-2 items-start p-4 border-b border-gray-700">
@@ -268,13 +301,46 @@ const Post = ({ post }) => {
               </form>
             </dialog>
 
-            {/* Retweet Placeholder */}
-            <div className="flex gap-1 items-center group cursor-pointer">
-              <BiRepost className="w-6 h-6 text-slate-500 group-hover:text-green-500" />
-              <span className="text-sm text-slate-500 group-hover:text-green-500">
-                0
-              </span>
+            {/* Repost */}
+        
+            <div
+              className="flex gap-1 items-center group cursor-pointer"
+              onClick={() => setIsRepostModalOpen(true)}
+            >
+              <BiRepost className="w-6 h-6 group-hover:text-green-500 text-slate-500" />
             </div>
+
+            {isRepostModalOpen && (
+              <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center">
+                <div className="bg-black p-4 rounded-lg w-[400px]">
+                  <textarea
+                    value={repostText}
+                    onChange={(e) => setRepostText(e.target.value)}
+                    placeholder="Add your thoughts..."
+                    className="w-full border rounded p-2"
+                  />
+                  <div className="flex justify-end gap-2 mt-2">
+                    <button
+                      onClick={() => setIsRepostModalOpen(false)}
+                      className="px-3 py-1 bg-gray-200 rounded"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      disabled={isReposting}
+                      onClick={() => {
+                        rePost(repostText);
+                        setIsRepostModalOpen(false);
+                        setRepostText("");
+                      }}
+                      className="px-3 py-1 bg-green-500 text-white rounded"
+                    >
+                      {isReposting ? "Reposting..." : "Repost"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Likes */}
             <div

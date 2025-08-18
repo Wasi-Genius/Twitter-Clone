@@ -68,13 +68,6 @@ const userSchema = new mongoose.Schema({
         }
     ],
 
-    retweetedPosts: [
-        {
-            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-            default: []
-        }
-    ],
-
     bookmarks: [
         {
             type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],

@@ -208,3 +208,43 @@ export const getUserPosts = async (req, res) => {
     });
   }
 };
+
+// Repost a post
+export const rePost = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    // Find the post to repost
+    let parentPost = await Post.findById(postId);
+    if (!parentPost) return res.status(404).json({ message: "Post not found" });
+
+    // If this is a repost, point to the original post
+    if (parentPost.isRepost && parentPost.parentPost) {
+      parentPost = await Post.findById(parentPost.parentPost);
+      if (!parentPost) return res.status(404).json({ message: "Original post not found" });
+    }
+
+    // Create the repost as a new Post document
+    const repost = new Post({
+      text: text || "",
+      user: userId,
+      parentPost: parentPost._id,
+      isRepost: true,
+    });
+
+    await repost.save();
+
+    return res.status(201).json({
+      message: "Post reposted successfully",
+      repost,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error!",
+      error: error.message,
+    });
+  }
+};

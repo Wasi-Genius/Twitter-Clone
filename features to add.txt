@@ -1,5 +1,6 @@
 Seeing following/followers in profile 
-retweeting 
+reposts
+- if reposting a repost, you can only repost the original post
 bookmarks
 allowing viewing of an image of an post
 notification if someone commented, retweeted, or bookmarked a post

@@ -50,15 +50,15 @@ const postSchema = new mongoose.Schema(
 
     comments: [commentSchema],
 
-    // For quote posts or retweets
+    // For repost
     parentPost: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post',
       default: null,
     },
 
-    // True if this post is a retweet
-    isRetweet: {
+    // True if this post is a repost
+    isRepost: {
       type: Boolean,
       default: false,
     }
