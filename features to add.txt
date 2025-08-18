@@ -1,12 +1,7 @@
-Seeing following in profile 
-Seeing followers in profile 
+Seeing following/followers in profile 
 retweeting 
 bookmarks
-seeing what post a user liked along with also seeing their profile
-adding emojis to posts 
 allowing viewing of an image of an post
-add ability to add images along with a reply 
 timestamps to comments
 notification if someone commented, retweeted, or bookmarked a post
 check if backend database is actually getting updated 
-prevent users from creating profiles with the same username

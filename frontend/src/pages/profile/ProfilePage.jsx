@@ -10,6 +10,7 @@ import EditProfileModal from "./EditProfileModal";
 import { formatMemberSinceDate } from "../../utils/date/index.js";
 import useFollow from "../../hooks/userFollow";
 import FollowModal from "../../pages/profile/FollowModal.jsx";
+import RightPanel from "../../components/common/RightPanel.jsx";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -279,31 +280,55 @@ const ProfilePage = () => {
             <div className="flex gap-4">
 
               {/* Following */}
-              <button
-                className="flex gap-1 items-center hover:underline"
-                onClick={() => setModalType("following")}
+              <div
+                className="flex gap-1 items-center cursor-pointer"
+                onClick={() =>
+                  document.getElementById(`following_modal_${user._id}`).showModal()
+                }
               >
                 <span className="font-bold text-sm">{user?.following.length}</span>
                 <span className="text-slate-500 text-sm">Following</span>
-              </button>
+              </div>
+
+              <dialog
+                id={`following_modal_${user._id}`}
+                className="modal border-none outline-none"
+              >
+                <div className="modal-box rounded border border-gray-600 w-[400px]">
+                  <RightPanel type="following" username={user.username} isModal />
+                </div>
+
+                <form method="dialog" className="modal-backdrop">
+                  <button className="outline-none">close</button>
+                </form>
+
+              </dialog>
 
               {/* Followers */}
-              <button
-                className="flex gap-1 items-center hover:underline"
-                onClick={() => setModalType("followers")}
+              <div
+                className="flex gap-1 items-center cursor-pointer"
+                onClick={() =>
+                  document.getElementById(`followers_modal_${user._id}`).showModal()
+                }
               >
                 <span className="font-bold text-sm">{user?.followers.length}</span>
                 <span className="text-slate-500 text-sm">Followers</span>
-              </button>
+              </div>
 
-              {/* Modal */}
-              {modalType && (
-                <FollowModal
-                  username={user.username}
-                  type={modalType}
-                  onClose={() => setModalType(null)}
-                />
-              )}
+              <dialog
+                id={`followers_modal_${user._id}`}
+                className="modal border-none outline-none"
+              >
+
+                <div className="modal-box rounded border border-gray-600 w-[400px]">
+                  <RightPanel type="followers" username={user.username} isModal />
+                </div>
+
+                <form method="dialog" className="modal-backdrop">
+                  <button className="outline-none">close</button>
+                </form>
+                
+              </dialog>
 
             </div>
 

@@ -36,7 +36,7 @@ const fetchFollowing = async (username) => {
 	return data;
 };
 
-const RightPanel = ({ type = "suggested", username }) => {
+const RightPanel = ({ type = "suggested", username, isModal = false }) => {
 	
 	const { data: users, isLoading } = useQuery({
 		queryKey: [type, username],
@@ -52,7 +52,7 @@ const RightPanel = ({ type = "suggested", username }) => {
 	const { follow, isPending } = useFollow();
 
 	// If no users, show invisible box (keeps layout consistent for suggested)
-	if (!isLoading && (!users || users.length === 0)) {
+	if (!isLoading && (!users || users.length === 0) && !isModal) {
 		return (
 			<div className="hidden lg:block my-4 mx-2">
 				<div className="invisible p-4 rounded-md sticky top-2">
@@ -65,6 +65,7 @@ const RightPanel = ({ type = "suggested", username }) => {
 	return (
 		<div className="hidden lg:block my-4 mx-2">
 			<div className="bg-[#16181C] p-4 rounded-md sticky top-2">
+				
 				<p className="font-bold">
 					{type === "followers"
 						? "Followers"
