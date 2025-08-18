@@ -158,7 +158,7 @@ const Post = ({ post }) => {
 
 				{/* Actions */}
 				<div className="flex justify-between mt-3">
-					{/* Left Action Group */}
+
 					<div className="flex gap-4 items-center w-2/3 justify-between">
 						{/* Comments */}
 						<div

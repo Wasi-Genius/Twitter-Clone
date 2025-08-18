@@ -9,6 +9,7 @@ import EditProfileModal from "./EditProfileModal";
 
 import { formatMemberSinceDate } from "../../utils/date/index.js";
 import useFollow from "../../hooks/userFollow";
+import RightPanelSkeleton from "../../components/skeletons/RightPanelSkeleton.jsx";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -17,7 +18,6 @@ import { MdEdit } from "react-icons/md";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
 
 const ProfilePage = () => {
   // ---------------------- State ----------------------
@@ -162,7 +162,7 @@ const ProfilePage = () => {
       {/* Profile Header & Info */}
       {!isLoading && !isRefetching && user && (
         <>
-          {/* Back Button + Name + Post Count */}
+          {/* Bottom Left Profile Section */}
           <div className='flex gap-10 px-4 py-2 items-center'>
             <Link to='/'>
               <FaArrowLeft className='w-4 h-4' />
@@ -173,7 +173,6 @@ const ProfilePage = () => {
           </div>
 
           {/* Banner Image + Edit */}
-
           <div className='relative group/cover'>
             <img
               src={bannerImg || user?.coverImg || "/banner-placeholder.png"}
@@ -243,15 +242,17 @@ const ProfilePage = () => {
           </div>
 
           {/* Profile Info Section */}
-          <div className='flex flex-col gap-4 mt-14 px-4'>
+
+          {/* User Information*/}
+          <div className='flex flex-col gap-4 mt-8 px-4'>
             <div className='flex flex-col'>
               <span className='font-bold text-lg'>{user?.fullName}</span>
-              <span className='text-sm text-slate-500'>@{user?.username}</span>
-              <span className='text-sm my-1'>{user?.bio}</span>
+              <span className='text-base text-slate-500'>@{user?.username}</span>
+              <span className='text-lg'>{user?.bio}</span>
             </div>
 
-            {/* Links & Join Date */}
-            <div className='flex gap-2 flex-wrap'>
+            {/* Link */}
+            <div className='flex gap-2 flex-wrap -mt-2'>
               {user?.link && (
                 <div className='flex gap-1 items-center '>
                   <FaLink className='w-3 h-3 text-slate-500' />
@@ -259,30 +260,92 @@ const ProfilePage = () => {
                     href={normalizeLink(user.link)}
                     target='_blank'
                     rel='noreferrer'
-                    className='text-sm text-blue-500 hover:underline'
+                    className='text-base text-blue-500 hover:underline'
                   >
                     {user.link}
                   </a>
                 </div>
               )}
+            </div>
 
+            {/* Join Date */}
               <div className='flex gap-2 items-center'>
                 <IoCalendarOutline className='w-4 h-4 text-slate-500' />
                 <span className='text-sm text-slate-500'>{memberSince}</span>
               </div>
+
+            {/* Following and Followers Count */}
+            <div className='flex gap-2'>
+
+              <div className='flex gap-1 items-center'>
+                <span className='font-bold text-sm'>{user?.following.length}</span>
+
+                <span className='text-slate-500 text-sm'>Following</span>
+                
+              </div>
+
+              <div className='flex gap-1 items-center'>
+                <span className='font-bold text-sm'>{user?.followers.length}</span>
+                <span className='text-slate-500 text-sm'>Followers</span>
+              </div>
+
             </div>
 
-            {/* Follower Count */}
-            <div className='flex gap-2'>
-              <div className='flex gap-1 items-center'>
-                <span className='font-bold text-xs'>{user?.following.length}</span>
-                <span className='text-slate-500 text-xs'>Following</span>
-              </div>
-              <div className='flex gap-1 items-center'>
-                <span className='font-bold text-xs'>{user?.followers.length}</span>
-                <span className='text-slate-500 text-xs'>Followers</span>
+            {/* Following and Followers Link Modal */}
+
+            <div className="hidden lg:block my-4 mx-2">
+              <div className="bg-[#16181C] p-4 rounded-md sticky top-2">
+                <div className="flex flex-col gap-4">
+                  {isLoading
+                    ? Array.from({ length: 4 }).map((_, idx) => (
+                        <RightPanelSkeleton key={idx} />
+                      ))
+                    : users.followers?.map((user) => (
+                        <Link
+                          to={`/profile/${user.username}`}
+                          className="flex items-center justify-between gap-4"
+                          key={user._id}
+                        >
+                          <div className="flex gap-2 items-center">
+                            <div className="avatar">
+                              <div className="w-8 rounded-full">
+                                <img
+                                  src={
+                                    user.profileImg ||
+                                    "/avatar-placeholder.png"
+                                  }
+                                  alt={user.fullName}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="font-semibold tracking-tight truncate w-28">
+                                {user.fullName}
+                              </span>
+                              <span className="text-sm text-slate-500">
+                                @{user.username}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            className="btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              follow(user._id);
+                            }}
+                          >
+                            {isPending ? (
+                              <LoadingSpinner size="sm" />
+                            ) : (
+                              "Follow"
+                            )}
+                          </button>
+                        </Link>
+                      ))}
+                </div>
               </div>
             </div>
+
           </div>
 
           {/* Tabs: Posts / Likes */}

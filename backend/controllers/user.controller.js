@@ -20,6 +20,44 @@ export const getUserProfile = async (req, res) => {
     }
 };
 
+// Get user followers by username
+export const getUserFollowers = async (req, res) => {
+    const { username } = req.params;
+    try {
+        const user = await User.findOne({ username })
+            .select("-password")
+            .populate("followers", "username fullName profileImg"); 
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found!" });
+        }
+        return res.status(200).json(user.followers);
+    } catch (error) {
+        console.log("Error in getUserFollowers:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+// Get user following by username
+export const getUserFollowing = async (req, res) => {
+    const { username } = req.params;
+    try {
+        const user = await User.findOne({ username })
+            .select("-password")
+            .populate("following", "username fullName profileImg"); 
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found!" });
+        }
+
+        return res.status(200).json(user.following);
+    } catch (error) {
+        console.log("Error in getUserFollowing:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Follow or unfollow a user
 export const followUnfollowUser = async (req, res) => {
     try {

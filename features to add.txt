@@ -1,4 +1,3 @@
-add error message on screen for comments
 Seeing following in profile 
 Seeing followers in profile 
 retweeting 
@@ -10,3 +9,4 @@ add ability to add images along with a reply
 timestamps to comments
 notification if someone commented, retweeted, or bookmarked a post
 check if backend database is actually getting updated 
+prevent users from creating profiles with the same username
