@@ -13,7 +13,7 @@ const commentSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true } // adds createdAt/updatedAt to comments
+  { timestamps: true }
 );
 
 const postSchema = new mongoose.Schema(

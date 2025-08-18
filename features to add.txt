@@ -1,4 +1,3 @@
-allow a default profile picture/banner, they do not have to choose a photo
 add error message on screen for comments
 Seeing following in profile 
 Seeing followers in profile 

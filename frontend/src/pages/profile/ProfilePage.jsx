@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 
 const ProfilePage = () => {
   // ---------------------- State ----------------------
-  const [coverImg, setCoverImg] = useState(null);
+  const [bannerImg, setCoverImg] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
   const [feedType, setFeedType] = useState("posts");
 
@@ -76,7 +76,7 @@ const ProfilePage = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            coverImg,
+            coverImg: bannerImg,
             profileImg,
           }),
         });
@@ -172,15 +172,16 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Cover Image + Edit */}
+          {/* Banner Image + Edit */}
+
           <div className='relative group/cover'>
             <img
-              src={coverImg || user?.coverImg || "/cover.png"}
+              src={bannerImg || user?.coverImg || "/banner-placeholder.png"}
               className='h-52 w-full object-cover'
-              alt='cover image'
+              alt='banner image'
             />
 
-            {/* Edit Cover Image */}
+            {/* Edit Banner Image */}
             {isMyProfile && (
               <div
                 className='absolute top-2 right-2 rounded-full p-2 bg-gray-800 bg-opacity-75 cursor-pointer opacity-0 group-hover/cover:opacity-100 transition duration-200'
@@ -212,6 +213,7 @@ const ProfilePage = () => {
 
           {/* Buttons (Edit / Follow / Update) */}
           <div className='flex justify-end px-4 mt-5'>
+
             {isMyProfile && <EditProfileModal authUser = {authUser} />}
 
             {!isMyProfile && (
@@ -219,18 +221,18 @@ const ProfilePage = () => {
                 className='btn btn-outline rounded-full btn-sm'
                 onClick={() => follow(user?._id)}
               >
-                {isPending && "Loading..."}
-				{!isPending && amIFollowing && "Unfollow"}
-				{!isPending && !amIFollowing && "Follow"}
+              {isPending && "Loading..."}
+              {!isPending && amIFollowing && "Unfollow"}
+              {!isPending && !amIFollowing && "Follow"}
 
               </button>
             )}
 
-            {(coverImg || profileImg) && (
+            {(bannerImg || profileImg) && (
               <button
                 className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
                 onClick={async () => {
-                  await updateProfile({coverImg, profileImg})
+                  await updateProfile({coverImg: bannerImg, profileImg})
                   setProfileImg(null);
                   setCoverImg(null); 
                 }}

@@ -72,7 +72,7 @@ const Post = ({ post }) => {
 		mutationFn: () =>
 			apiRequest(`/api/posts/comment/${post._id}`, "POST", { text: comment }),
 		onSuccess: () => {
-			toast.success("Comment posted successfully");
+			toast.success("Commented successfully");
 			setComment("");
 			queryClient.invalidateQueries({ queryKey: ["posts"] });
 		},

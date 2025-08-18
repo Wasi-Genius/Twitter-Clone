@@ -70,9 +70,9 @@ export const commentOnPost = async (req, res) => {
     const userId = req.user._id;
 
     if (!text) {
-      return res.status(400).json({ message: "Comment text is required" });
+      return res.status(404).json({ message: "Text is required for comment" });
     }
-
+    
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
@@ -84,6 +84,7 @@ export const commentOnPost = async (req, res) => {
       message: "Comment added successfully",
       comment,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "Internal server error!",
