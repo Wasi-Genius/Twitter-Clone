@@ -9,7 +9,7 @@ import EditProfileModal from "./EditProfileModal";
 
 import { formatMemberSinceDate } from "../../utils/date/index.js";
 import useFollow from "../../hooks/userFollow";
-import RightPanelSkeleton from "../../components/skeletons/RightPanelSkeleton.jsx";
+import FollowModal from "../../pages/profile/FollowModal.jsx";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -148,6 +148,7 @@ const ProfilePage = () => {
       return url;
   };
 
+  const [modalType, setModalType] = useState(null);
 
   // ---------------------- JSX ----------------------
   return (
@@ -274,76 +275,36 @@ const ProfilePage = () => {
                 <span className='text-sm text-slate-500'>{memberSince}</span>
               </div>
 
-            {/* Following and Followers Count */}
-            <div className='flex gap-2'>
+            {/* Follow/Followers */}
+            <div className="flex gap-4">
 
-              <div className='flex gap-1 items-center'>
-                <span className='font-bold text-sm'>{user?.following.length}</span>
+              {/* Following */}
+              <button
+                className="flex gap-1 items-center hover:underline"
+                onClick={() => setModalType("following")}
+              >
+                <span className="font-bold text-sm">{user?.following.length}</span>
+                <span className="text-slate-500 text-sm">Following</span>
+              </button>
 
-                <span className='text-slate-500 text-sm'>Following</span>
-                
-              </div>
+              {/* Followers */}
+              <button
+                className="flex gap-1 items-center hover:underline"
+                onClick={() => setModalType("followers")}
+              >
+                <span className="font-bold text-sm">{user?.followers.length}</span>
+                <span className="text-slate-500 text-sm">Followers</span>
+              </button>
 
-              <div className='flex gap-1 items-center'>
-                <span className='font-bold text-sm'>{user?.followers.length}</span>
-                <span className='text-slate-500 text-sm'>Followers</span>
-              </div>
+              {/* Modal */}
+              {modalType && (
+                <FollowModal
+                  username={user.username}
+                  type={modalType}
+                  onClose={() => setModalType(null)}
+                />
+              )}
 
-            </div>
-
-            {/* Following and Followers Link Modal */}
-
-            <div className="hidden lg:block my-4 mx-2">
-              <div className="bg-[#16181C] p-4 rounded-md sticky top-2">
-                <div className="flex flex-col gap-4">
-                  {isLoading
-                    ? Array.from({ length: 4 }).map((_, idx) => (
-                        <RightPanelSkeleton key={idx} />
-                      ))
-                    : users.followers?.map((user) => (
-                        <Link
-                          to={`/profile/${user.username}`}
-                          className="flex items-center justify-between gap-4"
-                          key={user._id}
-                        >
-                          <div className="flex gap-2 items-center">
-                            <div className="avatar">
-                              <div className="w-8 rounded-full">
-                                <img
-                                  src={
-                                    user.profileImg ||
-                                    "/avatar-placeholder.png"
-                                  }
-                                  alt={user.fullName}
-                                />
-                              </div>
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="font-semibold tracking-tight truncate w-28">
-                                {user.fullName}
-                              </span>
-                              <span className="text-sm text-slate-500">
-                                @{user.username}
-                              </span>
-                            </div>
-                          </div>
-                          <button
-                            className="btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              follow(user._id);
-                            }}
-                          >
-                            {isPending ? (
-                              <LoadingSpinner size="sm" />
-                            ) : (
-                              "Follow"
-                            )}
-                          </button>
-                        </Link>
-                      ))}
-                </div>
-              </div>
             </div>
 
           </div>

@@ -20,24 +20,24 @@ const fetchSuggestedUsers = async () => {
 	}
 };
 
-const fetchFollowers = async (req, res) => {
-	const { username } = req.params;
+const fetchFollowers = async (username) => {
 	const res = await fetch(`/api/users/${username}/followers`);
 	const data = await res.json();
+
 	if (!res.ok) throw new Error(data.error || "Failed to fetch followers");
 	return data;
 };
 
-const fetchFollowing = async (req, res) => {
-	const { username } = req.params;
+const fetchFollowing = async (username) => {
 	const res = await fetch(`/api/users/${username}/following`);
 	const data = await res.json();
+
 	if (!res.ok) throw new Error(data.error || "Failed to fetch following");
 	return data;
 };
 
-const RightPanel = () => {
-	let type = "suggested"; // "suggested", "followers", or "following"
+const RightPanel = ({ type = "suggested", username }) => {
+	
 	const { data: users, isLoading } = useQuery({
 		queryKey: [type, username],
 		queryFn: () => {
