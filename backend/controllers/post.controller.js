@@ -77,11 +77,11 @@ export const commentOnPost = async (req, res) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     const comment = { text, user: userId };
-    post.comments.push(comment.trim());
+    post.comments.push(comment);
     await post.save();
 
     return res.status(201).json({
-      comment,
+      comment
     });
 
   } catch (error) {
