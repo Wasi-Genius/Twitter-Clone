@@ -11,7 +11,7 @@ import { formatPostDate } from "../../utils/date/dateTools";
 
 
 const Post = ({ post }) => {
-  const [comment, setComment] = useState("");
+  const [comment, setComment, repost] = useState("");
   const [likes, setLikes] = useState(post.likes || []);
 
   const queryClient = useQueryClient();
@@ -67,10 +67,10 @@ const Post = ({ post }) => {
 
 	// ----- COMMENT ON POST -----
   const { mutate: commentPost, isPending: isCommenting } = useMutation({
-	mutationFn: (commentText) => {
-		console.log("mutationFn called with:", commentText, "type:", typeof commentText);
-		return apiRequest(`/api/posts/comment/${post._id}`, "POST", { text: commentText });
-	},
+	
+    mutationFn: (commentText) => {
+      return apiRequest(`/api/posts/comment/${post._id}`, "POST", { text: commentText });
+    },
 
 	onSuccess: () => {
 		console.log("Comment posted successfully");
@@ -85,35 +85,7 @@ const Post = ({ post }) => {
 	},
 	});
 
-  // ----- HANDLERS -----
-  const handleDeletePost = () => !isDeleting && deletePost();
-  const handleLikePost = () => !isLiking && likePost();
-  const handlePostComment = (e) => {
-		e.preventDefault();
-		console.log("handlePostComment called. comment state:", comment, "type:", typeof comment);
-
-		// Make sure it's a string before trimming
-		if (typeof comment !== "string") {
-			console.error("Error: comment is not a string!", comment);
-			toast.error("Something went wrong with your comment");
-			return;
-		}
-
-		const trimmed = comment.trim();
-		console.log("Trimmed comment:", trimmed);
-
-		if (!trimmed) {
-			toast.error("Comment cannot be empty");
-			return;
-		}
-
-		if (!isCommenting) {
-			console.log("Calling commentPost with:", trimmed);
-			commentPost(trimmed);
-		}
-	};
-
-  // ----- REPOST -----
+   // ----- REPOST -----
   const { mutate: rePost, isPending: isReposting } = useMutation({
     mutationFn: async (text = "") => {
 
@@ -145,6 +117,49 @@ const Post = ({ post }) => {
 
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
   const [repostText, setRepostText] = useState("");
+
+  // ----- HANDLERS -----
+  const handleDeletePost = () => !isDeleting && deletePost();
+
+  const handleLikePost = () => !isLiking && likePost();
+
+  const handlePostComment = (e) => {
+		e.preventDefault();
+
+		if (typeof comment !== "string") {
+			console.error("Error: comment is not a string!", comment);
+			toast.error("Something went wrong with your comment");
+			return;
+		}
+
+		const trimmed = comment.trim();
+
+		if (!trimmed) {
+			toast.error("Comment cannot be empty");
+			return;
+		}
+
+		if (!isCommenting) {
+			commentPost(trimmed);
+		}
+	};
+
+  const handleRepost = (e) => {
+    e.preventDefault();
+
+    if (typeof repost !== "string") {
+			console.error("Error: comment is not a string!", repost);
+			toast.error("Something went wrong with your comment");
+			return;
+		}
+
+    const trimmed = repostText.trim();
+
+    if(!isReposting) {
+      rePost(trimmed);
+    }
+
+  }
 
   return (
     <div className="flex gap-2 items-start p-4 border-b border-gray-700">
@@ -269,9 +284,9 @@ const Post = ({ post }) => {
                           <div className="text-base">{comment.text}</div>
 
 						  <div>
-							<span className="text-gray-500 text-sm">
-								{formatPostDate(comment.createdAt)}
-							</span>
+                <span className="text-gray-500 text-sm">
+                  {formatPostDate(comment.createdAt)}
+                </span>
 						  </div>
 
                         </div>
@@ -305,42 +320,48 @@ const Post = ({ post }) => {
         
             <div
               className="flex gap-1 items-center group cursor-pointer"
-              onClick={() => setIsRepostModalOpen(true)}
+              onClick={() => document.getElementById(`repost_modal${post._id}`).showModal()}
             >
               <BiRepost className="w-6 h-6 group-hover:text-green-500 text-slate-500" />
             </div>
 
-            {isRepostModalOpen && (
-              <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center">
-                <div className="bg-black p-4 rounded-lg w-[400px]">
+            {/* Repost Modal */}
+
+            <dialog
+              id={`repost_modal${post._id}`}
+              className="modal border-none outline-none"
+            >
+              <div className="modal-box rounded border border-gray-600">
+
+                {/* Repost Text Input */}
+
+                <form 
+                  className="flex gap-2 items-center mt-4 border-t border-gray-600 pt-2"
+                  onSubmit = {handleRepost}
+                >
                   <textarea
-                    value={repostText}
-                    onChange={(e) => setRepostText(e.target.value)}
-                    placeholder="Add your thoughts..."
-                    className="w-full border rounded p-2"
+                  className="textarea w-full p-1 rounded text-md resize-none border focus:outline-none border-gray-800"
+                    placeholder= "Add a repost comment..."
                   />
-                  <div className="flex justify-end gap-2 mt-2">
-                    <button
-                      onClick={() => setIsRepostModalOpen(false)}
-                      className="px-3 py-1 bg-gray-200 rounded"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      disabled={isReposting}
-                      onClick={() => {
-                        rePost(repostText);
-                        setIsRepostModalOpen(false);
-                        setRepostText("");
-                      }}
-                      className="px-3 py-1 bg-green-500 text-white rounded"
-                    >
-                      {isReposting ? "Reposting..." : "Repost"}
-                    </button>
-                  </div>
-                </div>
+
+                    <div className="flex justify-end gap-2">
+                    
+                      {/* Repost button */}
+                      <button
+                        type="button"
+                        onClick={handleRepost}
+                        disabled={isReposting}
+                        className="btn btn-primary rounded-full btn-sm text-white px-4"
+                      >
+                        {isReposting ? <LoadingSpinner size="md" /> : "Repost"}
+                      </button>
+                    </div>
+                </form>
               </div>
-            )}
+              <form method="dialog" className="modal-backdrop">
+                <button className="outline-none">close</button>
+              </form>
+            </dialog>
 
             {/* Likes */}
             <div
