@@ -11,7 +11,8 @@ import { formatPostDate } from "../../utils/date/dateTools";
 
 
 const Post = ({ post }) => {
-  const [comment, setComment, repost] = useState("");
+  const [comment, setComment] = useState("");
+  const [repostText, setRepostText] = useState("");
   const [likes, setLikes] = useState(post.likes || []);
 
   const queryClient = useQueryClient();
@@ -104,8 +105,6 @@ const Post = ({ post }) => {
 
       console.log("🎉 Repost successful:", data);
       toast.success("Reposted successfully!");
-
-      // if you want the repost to appear right away, invalidate queries or update local state:
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
 
@@ -114,9 +113,8 @@ const Post = ({ post }) => {
       toast.error(error.message || "Failed to repost");
     },
   });
-
+ 
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
-  const [repostText, setRepostText] = useState("");
 
   // ----- HANDLERS -----
   const handleDeletePost = () => !isDeleting && deletePost();
@@ -146,20 +144,19 @@ const Post = ({ post }) => {
 
   const handleRepost = (e) => {
     e.preventDefault();
-
-    if (typeof repost !== "string") {
-			console.error("Error: comment is not a string!", repost);
-			toast.error("Something went wrong with your comment");
-			return;
-		}
-
     const trimmed = repostText.trim();
 
-    if(!isReposting) {
-      rePost(trimmed);
+    if (!trimmed && !post.text) {
+      toast.error("Repost must have text");
+      return;
     }
 
-  }
+    if (!isReposting) {
+      rePost(trimmed);
+      setRepostText(""); // reset after repost
+      document.getElementById(`repost_modal${post._id}`).close(); // close modal
+    }
+  };
 
   return (
     <div className="flex gap-2 items-start p-4 border-b border-gray-700">
@@ -214,7 +211,9 @@ const Post = ({ post }) => {
 
         {/* Text + Image */}
         <div className="flex flex-col gap-3 overflow-hidden">
-          <span>{post.text}</span>
+
+          {post.text && <span>{post.text}</span>}
+
           {post.img && (
             <img
               src={post.img}
@@ -222,12 +221,66 @@ const Post = ({ post }) => {
               alt="Post attachment"
             />
           )}
+
+          {/* Repost Section */}
+          {post.isRepost && post.repostOf && post.repostOf.user && (
+            <div className="flex gap-2 items-start p-4 border-b border-gray-700 rounded-lg bg-gray-900">
+              
+              {/* Original Post Avatar */}
+              <div className="avatar">
+                <Link
+                  to={`/profile/${post.repostOf.user.username}`}
+                  className="w-8 h-8 rounded-full overflow-hidden"
+                >
+                  <img
+                    src={postOwner.profileImg || "/avatar-placeholder.png"}
+                    alt={`${postOwner.fullName} profile`}
+                  />
+                  {post.repostOf.user.fullName}
+                </Link>
+              </div>
+
+              {/* Original Post Content */}
+              <div className="flex flex-col flex-1">
+                <Link 
+                  to = {`/profile/${post.repostOf.user.username}`}
+                  className="font-bold"
+                >
+                  {post.repostOf.user.fullName}
+                </Link>
+
+                <span className="text-gray-700 flex gap-1 text-base">
+                  <Link to={`/profile/${post.repostOf.user.username}`}>
+                    @{post.repostOf.user.username}
+                  </Link>
+
+                  <span>·</span>
+
+                  <span>{formatPostDate(post.repostOf.createdAt)}</span>
+                </span>
+
+                <div className="flex flex-col gap-3 overflow-hidden">
+
+                  {post.repostOf.text}
+
+                  {post.repostOf.img && (
+                    <img
+                      src={post.repostOf.img}
+                      className="h-60 object-contain rounded-md border border-gray-700"
+                      alt="Original post attachment"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
         <div className="flex justify-between mt-3">
 
           <div className="flex gap-4 items-center w-2/3 justify-between">
+
             {/* Comments */}
             <div
               className="flex gap-1 items-center cursor-pointer group"
@@ -236,9 +289,11 @@ const Post = ({ post }) => {
               }
             >
               <FaRegComment className="w-4 h-4 text-slate-500 group-hover:text-sky-400" />
+
               <span className="text-sm text-slate-500 group-hover:text-sky-400">
                 {post.comments.length}
               </span>
+
             </div>
 
             {/* Comment Modal */}
@@ -336,12 +391,14 @@ const Post = ({ post }) => {
                 {/* Repost Text Input */}
 
                 <form 
-                  className="flex gap-2 items-center mt-4 border-t border-gray-600 pt-2"
+                  className="flex gap-2 items-center border-none"
                   onSubmit = {handleRepost}
                 >
                   <textarea
-                  className="textarea w-full p-1 rounded text-md resize-none border focus:outline-none border-gray-800"
+                  className="textarea w-full p-2 rounded text-md resize-width-none border focus:outline-none border-gray-800"
                     placeholder= "Add a repost comment..."
+                    value = {repostText}
+                    onChange = {(e) => setRepostText(e.target.value)}
                   />
 
                     <div className="flex justify-end gap-2">
@@ -351,7 +408,7 @@ const Post = ({ post }) => {
                         type="button"
                         onClick={handleRepost}
                         disabled={isReposting}
-                        className="btn btn-primary rounded-full btn-sm text-white px-4"
+                        className="btn btn-success rounded-full btn-sm text-white px-4"
                       >
                         {isReposting ? <LoadingSpinner size="md" /> : "Repost"}
                       </button>

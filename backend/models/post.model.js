@@ -50,14 +50,12 @@ const postSchema = new mongoose.Schema(
 
     comments: [commentSchema],
 
-    // For repost
-    parentPost: {
+    repostOf: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Post',
+      ref: "Post",
       default: null,
     },
-
-    // True if this post is a repost
+    
     isRepost: {
       type: Boolean,
       default: false,

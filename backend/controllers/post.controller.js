@@ -139,7 +139,14 @@ export const getAllPosts = async (req, res) => {
     const posts = await Post.find()
       .sort({ createdAt: -1 })
       .populate("user", "-password")
-      .populate("comments.user", "-password");
+      .populate("comments.user", "-password")
+      .populate({
+        path: "repostOf",
+        populate: [
+          { path: "user", select: "-password" },
+          { path: "comments.user", select: "-password" },
+        ],
+      });
 
     return res.status(200).json(posts);
   } catch (error) {
@@ -212,29 +219,50 @@ export const getUserPosts = async (req, res) => {
 // Repost a post
 export const rePost = async (req, res) => {
   try {
+    
     const { text } = req.body;
     const postId = req.params.id;
     const userId = req.user._id;
 
     // Find the post to repost
-    let parentPost = await Post.findById(postId);
-    if (!parentPost) return res.status(404).json({ message: "Post not found" });
+    let repostOf = await Post.findById(postId);
+    if (!repostOf) return res.status(404).json({ message: "Post not found" });
 
-    // If this is a repost, point to the original post
-    if (parentPost.isRepost && parentPost.parentPost) {
-      parentPost = await Post.findById(parentPost.parentPost);
-      if (!parentPost) return res.status(404).json({ message: "Original post not found" });
+    // If reposting a repost, point to the original
+    if (repostOf.isRepost && repostOf.repostOf) {
+      repostOf = await Post.findById(repostOf.repostOf);
+      if (!repostOf) return res.status(404).json({ message: "Original post not found" });
     }
 
     // Create the repost as a new Post document
     const repost = new Post({
       text: text || "",
       user: userId,
-      parentPost: parentPost._id,
+      repostOf: repostOf._id,
       isRepost: true,
     });
 
     await repost.save();
+
+    // Populate user and repostOf for frontend convenience
+    await repost.populate("user", "-password");
+    await repost.populate({
+      path: "repostOf",
+      populate: [
+        { path: "user", select: "-password" },
+        { path: "comments.user", select: "-password" },
+      ],
+    });
+
+     // Notify the parent post owner (if not same user)
+    if (repostOf.user.toString() !== userId.toString()) {
+      const notification = new Notification({
+        from: userId,
+        to: repostOf.user,
+        type: "repost",
+      });
+      await notification.save();
+    }
 
     return res.status(201).json({
       message: "Post reposted successfully",

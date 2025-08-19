@@ -2,6 +2,7 @@ Seeing following/followers in profile
 reposts
 - if reposting a repost, you can only repost the original post
 bookmarks
+bookmarks + deleting bookmarks 
 allowing viewing of an image of an post
 notification if someone commented, retweeted, or bookmarked a post
-check if backend database is actually getting updated 
+deleting comments 
