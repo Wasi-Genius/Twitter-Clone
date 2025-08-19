@@ -9,6 +9,8 @@ import { FaRegBookmark } from "react-icons/fa6";
 import LoadingSpinner from "./LoadingSpinner";
 import { formatPostDate } from "../../utils/date/dateTools";
 
+import { useEffect } from "react";
+
 /**
  * Utility function for API requests.
  */
@@ -50,7 +52,7 @@ const CommentItem = ({ comment }) => (
 /**
  * Renders the original post inside a repost.
  */
-const RepostContent = ({ repostOf }) => (
+const RepostContent = ({ repostOf, onImageClick }) => (
   <div className="flex gap-2 items-start p-4 border-b border-gray-700 rounded-lg bg-gray-900">
     <div className="avatar">
       <Link
@@ -80,6 +82,7 @@ const RepostContent = ({ repostOf }) => (
             src={repostOf.img}
             className="h-60 object-contain rounded-md border border-gray-700"
             alt="Original post attachment"
+            onClick={() => onImageClick(repostOf.img)}
           />
         )}
       </div>
@@ -92,6 +95,8 @@ const Post = ({ post }) => {
   const [comment, setComment] = useState("");
   const [repostText, setRepostText] = useState("");
   const [likes, setLikes] = useState(post.likes || []);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImg, setPreviewImg] = useState(null); // which image to preview
 
   const queryClient = useQueryClient();
 
@@ -171,8 +176,41 @@ const Post = ({ post }) => {
     }
   };
 
+  const handleImageClick = (img) => {
+    setPreviewImg(img);
+    setPreviewOpen(true);
+  };
+
+
+  // ----- Image Modal -----
+  function ImageModal({ img, onClose }) {
+    // Close with ESC key
+    
+    useEffect(() => {
+      const handler = (e) => e.key === "Escape" && onClose();
+      window.addEventListener("keydown", handler);
+      return () => window.removeEventListener("keydown", handler);
+    }, [onClose]);
+
+    return (
+      <div
+        className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+        onClick={onClose}
+      >
+        <img
+          src={img}
+          alt="Preview"
+          className="max-h-[100vh] max-w-[100vw] object-contain rounded-md shadow-lg"
+          // Stop closing when clicking the image itself
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+    );
+  }
+
   // ----- Render -----
   return (
+
     <div className="flex gap-2 items-start p-4 border-b border-gray-700">
       {/* Profile Image */}
       <div className="avatar">
@@ -213,11 +251,16 @@ const Post = ({ post }) => {
               src={post.img}
               className="h-80 object-contain rounded-lg border border-gray-700"
               alt="Post attachment"
+              onClick={() => handleImageClick(post.img)}
             />
           )}
+
           {/* Repost Section */}
           {post.isRepost && post.repostOf && post.repostOf.user && (
-            <RepostContent repostOf={post.repostOf} />
+            <RepostContent 
+              repostOf={post.repostOf} 
+              onImageClick={handleImageClick}
+              />
           )}
         </div>
 
@@ -234,6 +277,7 @@ const Post = ({ post }) => {
                 {post.comments.length}
               </span>
             </div>
+
             {/* Comment Modal */}
             <dialog id={`comments_modal${post._id}`} className="modal border-none outline-none">
               <div className="modal-box rounded border border-gray-600">
@@ -273,6 +317,7 @@ const Post = ({ post }) => {
             >
               <BiRepost className="w-6 h-6 group-hover:text-green-500 text-slate-500" />
             </div>
+
             {/* Repost Modal */}
             <dialog id={`repost_modal${post._id}`} className="modal border-none outline-none">
               <div className="modal-box rounded border border-gray-600">
@@ -299,6 +344,14 @@ const Post = ({ post }) => {
                 <button className="outline-none">close</button>
               </form>
             </dialog>
+
+            {/* Image Preview Modal */}
+            {previewOpen && previewImg && (
+              <ImageModal
+                img={previewImg}
+                onClose={() => setPreviewOpen(false)}
+              />
+            )}
 
             {/* Likes */}
             <div className="flex gap-1 items-center group cursor-pointer" onClick={handleLikePost}>

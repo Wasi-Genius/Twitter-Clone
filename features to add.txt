@@ -3,6 +3,5 @@ bookmarks
     - bookmark icon working 
     - bookmarks tab
     - deleting bookmarks 
-allowing viewing of an image of an post
 notification if someone commented, or bookmarked a post
 deleting comments 
