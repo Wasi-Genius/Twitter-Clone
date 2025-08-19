@@ -16,7 +16,6 @@ function App() {
 	// Query to fetch the currently authenticated user
 	const { data: authUser, isLoading } = useQuery({
 		queryKey: ['authUser'],
-		
 		queryFn: async () => {
 			const res = await fetch('/api/auth/me');
 			const data = await res.json();

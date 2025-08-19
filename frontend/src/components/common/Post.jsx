@@ -114,8 +114,6 @@ const Post = ({ post }) => {
     },
   });
  
-  const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
-
   // ----- HANDLERS -----
   const handleDeletePost = () => !isDeleting && deletePost();
 
@@ -233,8 +231,8 @@ const Post = ({ post }) => {
                   className="w-8 h-8 rounded-full overflow-hidden"
                 >
                   <img
-                    src={postOwner.profileImg || "/avatar-placeholder.png"}
-                    alt={`${postOwner.fullName} profile`}
+                    src={post.repostOf.user.profileImg || "/avatar-placeholder.png"}
+                    alt={`${post.repostOf.user.username.fullName} profile`}
                   />
                   {post.repostOf.user.fullName}
                 </Link>
@@ -242,6 +240,7 @@ const Post = ({ post }) => {
 
               {/* Original Post Content */}
               <div className="flex flex-col flex-1">
+
                 <Link 
                   to = {`/profile/${post.repostOf.user.username}`}
                   className="font-bold"

@@ -185,7 +185,14 @@ export const getFollowingPosts = async (req, res) => {
     const feedPosts = await Post.find({ user: { $in: user.following } })
       .sort({ createdAt: -1 })
       .populate("user", "-password")
-      .populate("comments.user", "-password");
+      .populate("comments.user", "-password")
+      .populate({
+        path: "repostOf",
+        populate: [
+          { path: "user", select: "-password" },
+          { path: "comments.user", select: "-password" },
+        ],
+      });
 
     return res.status(200).json(feedPosts);
   } catch (error) {
@@ -205,7 +212,14 @@ export const getUserPosts = async (req, res) => {
     const posts = await Post.find({ user: user._id })
       .sort({ createdAt: -1 })
       .populate("user", "-password")
-      .populate("comments.user", "-password");
+      .populate("comments.user", "-password")
+      .populate({
+        path: "repostOf",
+        populate: [
+          { path: "user", select: "-password" },
+          { path: "comments.user", select: "-password" },
+        ],
+      });
 
     return res.status(200).json(posts);
   } catch (error) {
