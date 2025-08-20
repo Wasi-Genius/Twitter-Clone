@@ -1,6 +1,5 @@
 Seeing following/followers in profile 
-bookmarks
-    - reposts not showing up in bookmarks or likes
-notification if someone commented, or bookmarked a post
-why are my delete notifications not being deleted 
+notification if someone commented
+why are my delete notifications not being deleted (check deletion of posts and likes and comments)
 deleting comments 
+update when removing likes/bookmarks without having to click refresh on a page

@@ -211,8 +211,16 @@ export const getLikedPosts = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
+      .sort({ createdAt: -1 })
       .populate("user", "-password")
-      .populate("comments.user", "-password");
+      .populate("comments.user", "-password")
+      .populate({
+        path: "repostOf",
+        populate: [
+          { path: "user", select: "-password" },
+          { path: "comments.user", select: "-password" },
+        ],
+      });
 
     return res.status(200).json(likedPosts);
   } catch (error) {
@@ -232,8 +240,16 @@ export const getBookmarkedPosts = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found"});
 
     const bookmarkedPosts = await Post.find({ _id: { $in: user.bookmarkedPosts}})
+      .sort({ createdAt: -1 })
       .populate("user", "-password")
-      .populate("comments.user", "-password");
+      .populate("comments.user", "-password")
+      .populate({
+        path: "repostOf",
+        populate: [
+          { path: "user", select: "-password" },
+          { path: "comments.user", select: "-password" },
+        ],
+      });
 
     return res.status(200).json(bookmarkedPosts);
     
