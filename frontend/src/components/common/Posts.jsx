@@ -13,6 +13,8 @@ const Posts = ({ feedType, username, userId }) => {
         return `/api/posts/user/${username}`;
       case "likes":
         return `/api/posts/likes/${userId}`;
+      case "bookmarks":
+        return `/api/posts/bookmarks/${userId}`;
       case "forYou":
       default:
         return "/api/posts/all";
@@ -56,7 +58,15 @@ const Posts = ({ feedType, username, userId }) => {
 
   // Empty state UI
   if (posts?.length === 0) {
-    return <p className="text-center my-4">No posts currently in this tab.</p>;
+    if (feedType === "likes") {
+      return <p className="text-center my-4">No liked posts found.</p>;
+    }
+    else if (feedType === "bookmarks") {
+      return <p className="text-center my-4">No bookmarks found.</p>;
+    }
+    else {
+      return <p className="text-center my-4">No posts found.</p>;
+    }
   }
 
   // Posts list UI

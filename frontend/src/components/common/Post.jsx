@@ -95,8 +95,9 @@ const Post = ({ post }) => {
   const [comment, setComment] = useState("");
   const [repostText, setRepostText] = useState("");
   const [likes, setLikes] = useState(post.likes || []);
+  const [bookmarks, setBookmarks] = useState(post.bookmarks || []);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImg, setPreviewImg] = useState(null); // which image to preview
+  const [previewImg, setPreviewImg] = useState(null); 
 
   const queryClient = useQueryClient();
 
@@ -105,6 +106,7 @@ const Post = ({ post }) => {
   const postOwner = post.user;
   const isMyPost = authUser._id === postOwner._id;
   const isLiked = likes.includes(authUser._id?.toString());
+  const isBookmarked = bookmarks.includes(authUser._id?.toString())
   const formattedDate = formatPostDate(post.createdAt);
 
   // ----- Mutations -----
@@ -130,6 +132,18 @@ const Post = ({ post }) => {
     },
     onError: (error) => toast.error(error.message),
   });
+
+  // Bookmark Post
+  const { mutate: bookmarkPost, isPending: isBookmarking} = useMutation({
+    mutationFn: () => apiRequest(`/api/posts/bookmark/${post._id}`, "POST"),
+    onSuccess: (data) => setBookmarks(data.updatedBookmarks),
+    onMutate: () => {
+      setBookmarks((prev) => 
+        isBookmarked ? prev.filter((id) => id !== authUser._id) : [...prev, authUser._id]
+      );
+    },
+    onError: (error) => toast.error(error.message),
+  })
 
   // Comment on Post
   const { mutate: commentPost, isPending: isCommenting } = useMutation({
@@ -157,6 +171,7 @@ const Post = ({ post }) => {
   // ----- Handlers -----
   const handleDeletePost = () => !isDeleting && deletePost();
   const handleLikePost = () => !isLiking && likePost();
+  const handleBookmarkPost = () => !isBookmarking && bookmarkPost();
 
   const handlePostComment = (e) => {
     e.preventDefault();
@@ -371,10 +386,24 @@ const Post = ({ post }) => {
               </span>
             </div>
           </div>
-          {/* Right Action Group */}
-          <div className="flex w-1/3 justify-end gap-2 items-center">
-            <FaRegBookmark className="w-4 h-4 text-slate-500 cursor-pointer" />
+
+          {/* Bookmarks */}
+          <div className="flex gap-1 items-center group cursor-pointer"
+          onClick={handleBookmarkPost}
+          >
+            {isBookmarking && <LoadingSpinner size="sm" />}
+            {!isBookmarked && !isBookmarking && (
+              <FaRegBookmark className="w-4 h-4 text-slate-500 cursor-pointer group-hover:text-purple-500" />
+            )}
+            <span
+              className={`text-sm group-hover:text-purple-500 ${
+                  isBookmarked ? "text-purple-500" : "text-slate-500"
+                }`}
+            >
+              {bookmarks.length}
+            </span>
           </div>
+          
         </div>
       </div>
     </div>

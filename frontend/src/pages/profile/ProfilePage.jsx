@@ -67,6 +67,7 @@ const ProfilePage = () => {
     },
   });
 
+  // Update profile
   const { mutateAsync: updateProfile, isPending: isUpdatingProfile } =
     useMutation({
       mutationFn: async () => {
@@ -141,6 +142,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     refetch();
+    setFeedType("posts");
   }, [username, refetch]);
 
   const normalizeLink = (url) => {
@@ -150,8 +152,6 @@ const ProfilePage = () => {
     }
     return url;
   };
-
-  const [modalType, setModalType] = useState(null);
 
   // ---------------------- JSX ----------------------
   return (
@@ -382,6 +382,17 @@ const ProfilePage = () => {
                 <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
               )}
             </div>
+
+            {isMyProfile && (
+              <div
+                className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer"
+                onClick={() => setFeedType("bookmarks")}
+              >
+                Bookmarks
+                {feedType === "bookmarks" && (
+                  <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
+                )}
+            </div>)}
           </div>
         </>
       )}

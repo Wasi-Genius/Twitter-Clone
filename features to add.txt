@@ -1,7 +1,6 @@
 Seeing following/followers in profile 
 bookmarks
-    - bookmark icon working 
-    - bookmarks tab
+    - bookmarks tab (only available to the current user)
     - deleting bookmarks 
 notification if someone commented, or bookmarked a post
 why are my delete notifications not being deleted 

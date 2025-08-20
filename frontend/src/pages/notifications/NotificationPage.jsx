@@ -2,10 +2,9 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { IoSettingsOutline } from "react-icons/io5";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaTrash } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
-import { FaTrash } from "react-icons/fa";
-import { BiRepost } from "react-icons/bi";
+import { BiRepost, BiBookmark } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 
 const NotificationPage = () => {
@@ -120,6 +119,9 @@ const NotificationPage = () => {
             )}
             {notification.type === "repost" && (
               <BiRepost className="w-7 h-7 text-green-500" />
+            )}
+            {notification.type === "bookmark" && (
+              <FaRegBookmark className="w-7 h-7 text-purple-500" />
             )}
 
             {/* Link to Profile */}
