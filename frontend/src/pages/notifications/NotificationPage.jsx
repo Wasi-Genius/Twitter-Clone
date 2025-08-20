@@ -6,6 +6,7 @@ import { FaUser, FaTrash } from "react-icons/fa";
 import { FaHeart, FaBookmark } from "react-icons/fa6";
 import { BiRepost} from "react-icons/bi";
 import { toast } from "react-hot-toast";
+import { formatPostDate } from "../../utils/date/dateTools";
 
 const NotificationPage = () => {
   const queryClient = useQueryClient();
@@ -144,6 +145,8 @@ const NotificationPage = () => {
 
               </div>
             </Link>
+
+            <span className="text-gray-500 text-sm">{formatPostDate(notification.createdAt)}</span>
 
             {/* Delete Button */}
             <FaTrash
