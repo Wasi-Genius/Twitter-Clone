@@ -68,7 +68,7 @@ const userSchema = new mongoose.Schema({
         }
     ],
 
-    bookmarks: [
+    bookmarkedPosts: [
         {
             type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
             default: []

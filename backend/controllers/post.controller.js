@@ -133,6 +133,53 @@ export const likeUnlikePost = async (req, res) => {
   }
 };
 
+
+// Bookmark or Unbookmark a post 
+export const bookmarkPost = async (req, res) => {
+
+  try {
+    const postId = req.params.id;
+    const userId = req.user._id; 
+
+    const post = await Post.findById(postId);
+
+    if (!post) return res.status(404).json({message: "Post not found"})
+
+    let updatedBookmarks;
+
+    if (post.bookmarks.includes(userId)) {
+      // Unbookmark 
+      await Post.updateOne({ _id: postId}, {$pull: {bookmarks: userId}});
+      await User.updateOne({ _id: userId}, {$pull: {bookmarkedPosts: postId}});
+
+      updatedBookmarks = post.bookmarks.filter(id => id.toString() !== userId.toString());
+    } else {
+
+      // Bookmark
+      post.bookmarks.push(userId);
+      await post.save();
+      await User.updateOne({ _id: userId}, {$push: {bookmarkedPosts: postId}})
+
+      const notification = new Notification ({
+        from: userId, 
+        to: post.user, 
+        type: "bookmark",
+      });
+
+      await notification.save();
+
+      updatedBookmarks = post.bookmarks; 
+    }
+    return res.status(200).json({ updatedBookmarks});
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error!",
+      error: error.message
+    });
+  }
+
+}
+
 // Get all posts
 export const getAllPosts = async (req, res) => {
   try {
@@ -175,6 +222,28 @@ export const getLikedPosts = async (req, res) => {
     });
   }
 };
+
+// Get bookmarked posts by user
+export const getBookmarkedPosts = async (req, res) => {
+  try {
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) return res.status(404).json({ message: "User not found"});
+
+    const bookmarkedPosts = await Post.find({ _id: { $in: user.bookmarkedPosts}})
+      .populate("user", "-password")
+      .populate("comments.user", "-password");
+
+    return res.status(200).json(bookmarkedPosts);
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error!",
+      error: error.message
+    })
+  }
+}
 
 // Get posts from followed users
 export const getFollowingPosts = async (req, res) => {

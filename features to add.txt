@@ -4,4 +4,5 @@ bookmarks
     - bookmarks tab
     - deleting bookmarks 
 notification if someone commented, or bookmarked a post
+why are my delete notifications not being deleted 
 deleting comments 
