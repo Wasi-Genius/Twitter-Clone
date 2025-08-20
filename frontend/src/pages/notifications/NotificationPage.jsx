@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser, FaTrash } from "react-icons/fa";
-import { FaHeart } from "react-icons/fa6";
-import { BiRepost, BiBookmark } from "react-icons/bi";
+import { FaHeart, FaBookmark } from "react-icons/fa6";
+import { BiRepost} from "react-icons/bi";
 import { toast } from "react-hot-toast";
 
 const NotificationPage = () => {
@@ -121,7 +121,7 @@ const NotificationPage = () => {
               <BiRepost className="w-7 h-7 text-green-500" />
             )}
             {notification.type === "bookmark" && (
-              <FaRegBookmark className="w-7 h-7 text-purple-500" />
+              <FaBookmark className="w-7 h-7 text-purple-500" />
             )}
 
             {/* Link to Profile */}
@@ -138,7 +138,9 @@ const NotificationPage = () => {
 
                 <span className="font-bold">@{notification.from.username}</span>
 
-                {notification.type === "follow" ? "followed you" : notification.type === "like" ? "liked your post" : "reposted your post"}
+                {notification.type === "follow" ? "followed you" : 
+                  notification.type === "like" ? "liked your post" : 
+                  notification.type === "bookmark" ? "bookmarked your post" : "reposted your post"}
 
               </div>
             </Link>

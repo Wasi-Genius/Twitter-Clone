@@ -1,7 +1,6 @@
 Seeing following/followers in profile 
 bookmarks
-    - bookmarks tab (only available to the current user)
-    - deleting bookmarks 
+    - reposts not showing up in bookmarks or likes
 notification if someone commented, or bookmarked a post
 why are my delete notifications not being deleted 
 deleting comments 

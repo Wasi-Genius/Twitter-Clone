@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { FaRegComment, FaRegHeart, FaTrash } from "react-icons/fa";
+import { FaRegComment, FaRegHeart, FaTrash, FaRegBookmark } from "react-icons/fa";
 import { BiRepost } from "react-icons/bi";
-import { FaRegBookmark } from "react-icons/fa6";
 
 import LoadingSpinner from "./LoadingSpinner";
 import { formatPostDate } from "../../utils/date/dateTools";
@@ -394,6 +393,9 @@ const Post = ({ post }) => {
             {isBookmarking && <LoadingSpinner size="sm" />}
             {!isBookmarked && !isBookmarking && (
               <FaRegBookmark className="w-4 h-4 text-slate-500 cursor-pointer group-hover:text-purple-500" />
+            )}
+            {isBookmarked && !isBookmarking && (
+              <FaRegBookmark className="w-4 h-4 text-purple-500" />
             )}
             <span
               className={`text-sm group-hover:text-purple-500 ${
