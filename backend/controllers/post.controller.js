@@ -76,6 +76,14 @@ export const commentOnPost = async (req, res) => {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
+    const notification = new Notification ({
+        from: userId, 
+        to: post.user, 
+        type: "comment",
+    });
+
+    await notification.save();
+
     const comment = { text, user: userId };
     post.comments.push(comment);
     await post.save();
@@ -91,6 +99,31 @@ export const commentOnPost = async (req, res) => {
     });
   }
 };
+
+// Delete a comment 
+export const deleteComment = async (req, res) => {
+  try {
+ 
+    const comment = await Post.comments.findById(req.params.id)
+
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    if(comment.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to delete this comment" });
+    }
+
+    await comment.deleteOne();
+    return res.status(200).json({ message: "Comment deleted successfully" });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error!",
+      error: error.message,
+    });
+  }
+
+
+}
 
 // Like or Unlike a post
 export const likeUnlikePost = async (req, res) => {

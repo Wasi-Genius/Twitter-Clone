@@ -13,9 +13,6 @@ export const getNotifications = async (req, res) => {
     })
     .sort({createdAt: -1});
 
-    // Mark all notifications as read
-    await Notification.updateMany({ to: userId }, { read: true });
-
     res.status(200).json({ notifications });
   } catch (error) {
     console.error("Error fetching notifications:", error);

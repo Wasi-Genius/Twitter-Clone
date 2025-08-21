@@ -27,12 +27,6 @@ const notificationSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Whether the recipient has read the notification
-    read: {
-      type: Boolean,
-      default: false,
-    },
-
     // Extra data depending on the notification type
     meta: {
       type: mongoose.Schema.Types.Mixed,

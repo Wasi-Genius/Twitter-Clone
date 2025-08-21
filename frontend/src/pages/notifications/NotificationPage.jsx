@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { IoSettingsOutline } from "react-icons/io5";
-import { FaUser, FaTrash } from "react-icons/fa";
+import { FaUser, FaTrash, FaComment} from "react-icons/fa";
 import { FaHeart, FaBookmark } from "react-icons/fa6";
 import { BiRepost} from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import { formatPostDate } from "../../utils/date/dateTools";
+import { useEffect } from "react";
 
 const NotificationPage = () => {
   const queryClient = useQueryClient();
@@ -24,6 +25,11 @@ const NotificationPage = () => {
       return json;
     },
   });
+
+  // Refetch notification when the component mounts
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  }, [queryClient]); 
 
   /*
    * Mutation: Delete ALL notifications
@@ -124,6 +130,9 @@ const NotificationPage = () => {
             {notification.type === "bookmark" && (
               <FaBookmark className="w-7 h-7 text-purple-500" />
             )}
+            {notification.type === "comment" && (
+              <FaComment className="w-7 h-7 text-sky-500" />
+            )}
 
             {/* Link to Profile */}
             <Link to={`/profile/${notification.from.username}`} className="flex items-center gap-2">
@@ -141,7 +150,8 @@ const NotificationPage = () => {
 
                 {notification.type === "follow" ? "followed you" : 
                   notification.type === "like" ? "liked your post" : 
-                  notification.type === "bookmark" ? "bookmarked your post" : "reposted your post"}
+                  notification.type === "bookmark" ? "bookmarked your post": 
+                  notification.type === "comment" ? "commented on one of your posts" :"reposted your post"}
 
               </div>
             </Link>

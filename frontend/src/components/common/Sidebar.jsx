@@ -15,7 +15,7 @@ const Sidebar = () => {
   // --- React Query Setup ---
   const queryClient = useQueryClient();
 
-  // Fetch the authenticated user (no refetch options here → default)
+  // Fetch the authenticated user
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   // Logout mutation

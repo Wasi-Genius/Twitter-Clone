@@ -1,6 +1,6 @@
 Seeing following/followers in profile 
-notification if someone commented
 delete comment
+fix follow un follow (check frontend and backend)
 why are my delete notifications not being deleted (check deletion of posts and likes and comments)
 deleting comments 
-update when removing likes/bookmarks without having to click refresh on a page
+update when removing likes/bookmarks without having to click refresh on a page on profile page
