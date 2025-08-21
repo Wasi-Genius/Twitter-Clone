@@ -157,6 +157,7 @@ const ProfilePage = () => {
   return (
     
     <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
+
       {/* Skeleton or Error State */}
       {(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
       {!isLoading && !isRefetching && !user && (
@@ -295,6 +296,7 @@ const ProfilePage = () => {
             </div>
 
             {/* Follow/Followers */}
+
             <div className="flex gap-4">
               {/* Following */}
               <div

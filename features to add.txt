@@ -1,3 +1,2 @@
 Seeing following/followers in profile 
-fix follow un follow (check frontend and backend)
 work on suggested users and make it better or go back to the old version
