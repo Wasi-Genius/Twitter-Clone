@@ -4,6 +4,7 @@ import {
   createPost, 
   deletePost, 
   commentOnPost, 
+  deleteComment,
   likeUnlikePost,
   bookmarkPost, 
   getAllPosts, 
@@ -31,6 +32,7 @@ router.delete("/:id", protectRoute, deletePost);
 router.post("/like/:id", protectRoute, likeUnlikePost);
 router.post("/bookmark/:id", protectRoute, bookmarkPost);
 router.post("/comment/:id", protectRoute, commentOnPost);
+router.delete("/comment/:id/:commentId", protectRoute, deleteComment);
 router.post("/:id/repost", protectRoute, rePost);
 
 export default router;

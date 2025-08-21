@@ -103,16 +103,25 @@ export const commentOnPost = async (req, res) => {
 // Delete a comment 
 export const deleteComment = async (req, res) => {
   try {
- 
-    const comment = await Post.comments.findById(req.params.id)
 
+    const { id, commentId } = req.params;
+
+    // Find the post
+    const post = await Post.findById(id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    // Find the comment within that post
+    const comment = post.comments.id(commentId);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    if(comment.user.toString() !== req.user._id.toString()) {
+    // Check if the user is authorized (only the comment author can delete)
+    if(comment.user.toString() !== req.user._id.toString() &&
+     post.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this comment" });
     }
 
     await comment.deleteOne();
+    await post.save();
     return res.status(200).json({ message: "Comment deleted successfully" });
 
   } catch (error) {
@@ -121,7 +130,6 @@ export const deleteComment = async (req, res) => {
       error: error.message,
     });
   }
-
 
 }
 

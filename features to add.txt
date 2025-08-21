@@ -1,6 +1,8 @@
 Seeing following/followers in profile 
 delete comment
+do not exit the comment modal after deleting a comment 
 fix follow un follow (check frontend and backend)
 why are my delete notifications not being deleted (check deletion of posts and likes and comments)
 deleting comments 
 update when removing likes/bookmarks without having to click refresh on a page on profile page
+work on suggested users and make it better or go back to the old version

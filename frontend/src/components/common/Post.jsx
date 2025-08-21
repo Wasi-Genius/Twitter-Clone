@@ -25,30 +25,6 @@ const apiRequest = async (url, method = "GET", body) => {
 };
 
 /**
- * Renders a single comment.
- */
-const CommentItem = ({ comment }) => (
-  <div key={comment._id} className="flex gap-2 items-start">
-    <div className="avatar">
-      <div className="w-8 rounded-full">
-        <img
-          src={comment.user.profileImg || "/avatar-placeholder.png"}
-          alt={`${comment.user.fullName} profile`}
-        />
-      </div>
-    </div>
-    <div className="flex flex-col">
-      <div className="flex items-center gap-1">
-        <span className="font-bold">{comment.user.fullName}</span>
-        <span className="text-gray-500 text-sm">@{comment.user.username}</span>
-      </div>
-      <div className="text-base">{comment.text}</div>
-      <span className="text-gray-500 text-sm">{formatPostDate(comment.createdAt)}</span>
-    </div>
-  </div>
-);
-
-/**
  * Renders the original post inside a repost.
  */
 const RepostContent = ({ repostOf, onImageClick }) => (
@@ -107,8 +83,10 @@ const Post = ({ post }) => {
   const isLiked = likes.includes(authUser._id?.toString());
   const isBookmarked = bookmarks.includes(authUser._id?.toString())
   const formattedDate = formatPostDate(post.createdAt);
+  
 
   // ----- Mutations -----
+
   // Delete Post
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: () => apiRequest(`/api/posts/${post._id}`, "DELETE"),
@@ -156,6 +134,23 @@ const Post = ({ post }) => {
     onError: (error) => toast.error(error.message || "Something went wrong"),
   });
 
+  // Delete a comment
+  const { mutate: deleteComment} = useMutation({
+    mutationFn: async (commentId) => {
+      const res = await fetch(`/api/posts/comment/${post._id}/${commentId}`, { method: "DELETE" });
+
+      const json = await res.json(); 
+
+      if (!res.ok) throw new Error(json.error || "Failed to delete the comment!");
+      return json;
+    },
+    onSuccess: () => {
+      toast.success("Comment deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error) => toast.error(error.message || "Failed to delete comment"),
+  })
+
   // Repost
   const { mutate: rePost, isPending: isReposting } = useMutation({
     mutationFn: async (text = "") =>
@@ -169,6 +164,7 @@ const Post = ({ post }) => {
 
   // ----- Handlers -----
   const handleDeletePost = () => !isDeleting && deletePost();
+  const handleDeleteComment = (commentId) => deleteComment(commentId);
   const handleLikePost = () => !isLiking && likePost();
   const handleBookmarkPost = () => !isBookmarking && bookmarkPost();
 
@@ -281,6 +277,7 @@ const Post = ({ post }) => {
         {/* Actions */}
         <div className="flex justify-between mt-3">
           <div className="flex gap-4 items-center w-2/3 justify-between">
+
             {/* Comments */}
             <div
               className="flex gap-1 items-center cursor-pointer group"
@@ -294,34 +291,85 @@ const Post = ({ post }) => {
 
             {/* Comment Modal */}
             <dialog id={`comments_modal${post._id}`} className="modal border-none outline-none">
-              <div className="modal-box rounded border border-gray-600">
+              <div className="modal-box rounded border border-gray-600 max-w-2xl">
+
                 <h3 className="font-bold text-lg mb-4">COMMENTS</h3>
-                <div className="flex flex-col gap-3 max-h-60 overflow-auto">
+
+                <div className="flex flex-col gap-3 max-h-80 overflow-auto">
                   {post.comments.length === 0 ? (
                     <p className="text-sm text-slate-500">Be the first to comment.</p>
                   ) : (
-                    post.comments.map((comment) => <CommentItem key={comment._id} comment={comment} />)
-                  )}
+                    post.comments.map((comment) => {
+
+                    const userAbleToDeleteComment =
+                      comment.user._id === authUser._id || post.user._id === authUser._id;
+                    
+                    return (
+
+                      // Render each comment item
+                      <div key={comment._id} className="flex gap-2 items-start">
+
+                        {/* User Avatar */}
+                        <div className="avatar">
+                          <div className="w-8 rounded-full">
+                            <img
+                              src={comment.user.profileImg || "/avatar-placeholder.png"}
+                              alt={`${comment.user.fullName} profile`}
+                            />
+                          </div>
+                        </div>
+
+                        {/* User info and comment text */}
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-1">
+                            <span className="font-bold">{comment.user.fullName}</span>
+                            <span className="text-gray-500 text-sm">@{comment.user.username}</span>
+                          </div>
+
+                          <div className="text-base break-words flex-1 max-w-full sm:max-w-[600px]">
+                            {comment.text}
+                          </div>
+
+                          <span className="text-gray-500 text-sm">{formatPostDate(comment.createdAt)}</span>
+
+                        </div>
+                          {/* Delete Button */}
+
+                          {userAbleToDeleteComment && (<FaTrash
+                              className="w-5 h-5 min-w-[20px] text-gray-400 hover:text-red-500 cursor-pointer ml-auto translate-y-6 -translate-x-2"
+                              onClick={() => handleDeleteComment(comment._id)}
+                            />
+                          )}
+                      </div>
+                    );
+                  })
+                )}
                 </div>
+
                 {/* Comment Input */}
                 <form
                   className="flex gap-2 items-center mt-4 border-t border-gray-600 pt-2"
                   onSubmit={handlePostComment}
                 >
                   <textarea
-                    className="textarea w-full p-1 rounded text-md resize-none border focus:outline-none border-gray-800"
+                    className="textarea w-full p-1 rounded text-md resize-y none border focus:outline-none border-gray-800"
                     placeholder="Add a comment..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                   />
+
                   <button className="btn btn-primary rounded-full btn-sm text-white px-4">
                     {isCommenting ? <LoadingSpinner size="md" /> : "Post"}
                   </button>
+
                 </form>
+
               </div>
+
               <form method="dialog" className="modal-backdrop">
                 <button className="outline-none">close</button>
               </form>
+
             </dialog>
 
             {/* Repost */}
