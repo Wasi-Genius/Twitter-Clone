@@ -53,11 +53,12 @@ export const deleteNotificationById = async (req, res) => {
 
     if (!deletedNotification) {
       return res.status(404).json({
-        message: "Notification not found or you're not authorized to delete it",
+        message: "Notification not found!",
       });
     }
 
     res.status(200).json({ message: "Notification deleted successfully" });
+
   } catch (error) {
     console.error("Error deleting notification by ID:", error);
     res.status(500).json({

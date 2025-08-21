@@ -100,7 +100,7 @@ const Post = ({ post }) => {
   // Like Post
   const { mutate: likePost, isPending: isLiking } = useMutation({
     mutationFn: () => apiRequest(`/api/posts/like/${post._id}`, "POST"),
-    onSuccess: (data) => setLikes(data.updatedLikes),
+    onSuccess: (data) => setLikes(data.updatedLikes), 
     onMutate: () => {
       // Optimistic UI update
       setLikes((prev) =>
