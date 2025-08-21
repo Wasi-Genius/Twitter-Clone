@@ -31,7 +31,7 @@ export const getUserFollowers = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
-        return res.status(200).json(user.followers);
+        return res.status(200).json(user.followers || []);
     } catch (error) {
         console.log("Error in getUserFollowers:", error);
         res.status(500).json({ error: error.message });
@@ -51,7 +51,7 @@ export const getUserFollowing = async (req, res) => {
             return res.status(404).json({ error: "User not found!" });
         }
 
-        return res.status(200).json(user.following);
+        return res.status(200).json(user.following || []);
     } catch (error) {
         console.log("Error in getUserFollowing:", error);
         res.status(500).json({ error: error.message });

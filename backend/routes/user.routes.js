@@ -14,9 +14,9 @@ router.get("/profile/:username", getUserProfile)
     
 router.get("/suggested", protectRoute, getSuggestedUsers)
 
-router.get("/:id/followers", protectRoute, getUserFollowers)
+router.get("/followers/:username", protectRoute, getUserFollowers)
 
-router.get("/:id/following", protectRoute, getUserFollowing)
+router.get("/following/:username", protectRoute, getUserFollowing)
 
 router.post("/follow/:id", protectRoute, followUnfollowUser)
 
