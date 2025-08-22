@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "./LoadingSpinner";
 import useFollow from "../../hooks/userFollow";
+import { useEffect } from "react";
 
 // Fetch helpers
 const fetchSuggestedUsers = async () => {
@@ -72,10 +73,20 @@ const fetchFollowing = async (userId) => {
 
 */
 
-const RightPanel = ({ username}) => {
+const RightPanel = () => {
+
+	// Authenticate user
+	const { data: authUser } = useQuery({
+		queryKey: ["authUser"],
+		queryFn: async () => {
+		const res = await fetch("/api/auth/me");
+		if (!res.ok) throw new Error("Failed to fetch auth user");
+		return res.json();
+		},
+	});
 
 	const { data: users, isLoading, error } = useQuery({
-		queryKey: ["suggestedUsers"],
+		queryKey: ["suggestedUsers", authUser?._id],
 		queryFn: fetchSuggestedUsers,
 	});
 

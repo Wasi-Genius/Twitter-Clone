@@ -1,4 +1,4 @@
-fix right panel positioning 
 Fix following and followers buttons
 Seeing following/followers in profile 
+right panel updates/refetch when switching to another user 
 Deploy and create a github readme with video possibly 
