@@ -88,9 +88,9 @@ const RightPanel = ({ username}) => {
 	// If no users, show invisible box (keeps layout consistent for suggested)
 	if (!isLoading && (!users || users.length === 0)) {
 		return (
-			<div className="hidden lg:block my-4 mx-2">
-				<div className="bg-[#16181C] p-4 rounded-md sticky top-2">
-					<p className="font-bold">Wow you have somehow followed everyone!</p>
+			<div className="hidden lg:block my-4 mx-2 w-3xs">
+				<div className="bg-[#16181C] p-4 rounded-md sticky top-2 break-words">
+					<p className="font-bold">Wow you followed everyone! No suggestions!</p>
 				</div>
 			</div>
 		);

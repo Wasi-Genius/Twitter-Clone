@@ -308,7 +308,6 @@ const ProfilePage = () => {
                 onClick={() =>
                   document
                     .getElementById(`following_modal_${user._id}`)
-                    .showModal()
                 }
               >
                 <span className="font-bold text-sm">
@@ -317,30 +316,12 @@ const ProfilePage = () => {
                 <span className="text-slate-500 text-sm">Following</span>
               </div>
 
-              <dialog
-                id={`following_modal_${user._id}`}
-                className="modal border-none outline-none"
-              >
-                <div className="modal-box rounded border border-gray-600 w-[400px]">
-                  <RightPanel
-                    type="following"
-                    username={user.username}
-                    isModal
-                  />
-                </div>
-
-                <form method="dialog" className="modal-backdrop">
-                  <button className="outline-none">close</button>
-                </form>
-              </dialog>
-
               {/* Followers */}
               <div
                 className="flex gap-1 items-center cursor-pointer"
                 onClick={() =>
                   document
                     .getElementById(`followers_modal_${user._id}`)
-                    .showModal()
                 }
               >
                 <span className="font-bold text-sm">
@@ -349,18 +330,6 @@ const ProfilePage = () => {
                 <span className="text-slate-500 text-sm">Followers</span>
               </div>
 
-              <dialog
-                id={`followers_modal_${user._id}`}
-                className="modal border-none outline-none"
-              >
-                <div className="modal-box rounded border border-gray-600 w-[400px]">
-                  <RightPanel/>
-                </div>
-
-                <form method="dialog" className="modal-backdrop">
-                  <button className="outline-none">close</button>
-                </form>
-              </dialog>
             </div>
           </div>
 
