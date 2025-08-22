@@ -79,6 +79,7 @@ function App() {
 					path='/profile/:username'
 					element={authUser ? <ProfilePage /> : <Navigate to='/login' />}
 				/>
+
 			</Routes>
 
 			{/* Right Panel (only visible when user is logged in) */}

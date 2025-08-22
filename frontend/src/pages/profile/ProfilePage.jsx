@@ -40,8 +40,13 @@ const ProfilePage = () => {
 
   // Get logged-in user
   const { data: authUser } = useQuery({
+    
     queryKey: ["authUser"],
-    //queryFn: async () => {},
+    queryFn: async () => {
+      const res = await fetch("/api/auth/me");
+      if (!res.ok) throw new Error("Failed to fetch auth user");
+      return res.json();
+    },
   });
 
   // Get profile user

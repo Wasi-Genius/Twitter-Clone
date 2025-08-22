@@ -77,7 +77,15 @@ const Post = ({ post }) => {
   const queryClient = useQueryClient();
 
   // ----- Authenticated User -----
-  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { data: authUser } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/me");
+      if (!res.ok) throw new Error("Failed to fetch auth user");
+      return res.json();
+    },
+  });
+
   const postOwner = post.user;
   const isMyPost = authUser._id === postOwner._id;
   const isLiked = likes.includes(authUser._id?.toString());

@@ -1,2 +1,4 @@
-Seeing following/followers in profile 
+Fix following and followers routes
 work on suggested users and make it better or go back to the old version
+Seeing following/followers in profile 
+Deploy and create a github readme with video possibly 

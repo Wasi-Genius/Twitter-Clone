@@ -4,12 +4,13 @@ import Notification from "../models/notification.model.js";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 
-// Get user profile by username
+// Get user profile
 export const getUserProfile = async (req, res) => {
     const { username } = req.params;
 
     try {
         const user = await User.findOne({ username }).select("-password");
+        
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -20,17 +21,17 @@ export const getUserProfile = async (req, res) => {
     }
 };
 
-// Get user followers by username
+// Get user followers 
 export const getUserFollowers = async (req, res) => {
-    const { username } = req.params;
+   
     try {
-        const user = await User.findOne({ username })
-            .select("-password")
-            .populate("followers", "username fullName profileImg"); 
-
+        
+        const user = await User.findById(req.user._id).select("-password");
+            
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
+
         return res.status(200).json(user.followers || []);
     } catch (error) {
         console.log("Error in getUserFollowers:", error);
@@ -39,14 +40,13 @@ export const getUserFollowers = async (req, res) => {
 };
 
 
-// Get user following by username
+// Get user following
 export const getUserFollowing = async (req, res) => {
-    const { username } = req.params;
+  
     try {
-        const user = await User.findOne({ username })
-            .select("-password")
-            .populate("following", "username fullName profileImg"); 
 
+        const user = await User.findById(req.user._id).select("-password");
+    
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
