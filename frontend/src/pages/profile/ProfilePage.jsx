@@ -40,7 +40,6 @@ const ProfilePage = () => {
 
   // Get logged-in user
   const { data: authUser } = useQuery({
-    
     queryKey: ["authUser"],
     queryFn: async () => {
       const res = await fetch("/api/auth/me");
@@ -355,11 +354,7 @@ const ProfilePage = () => {
                 className="modal border-none outline-none"
               >
                 <div className="modal-box rounded border border-gray-600 w-[400px]">
-                  <RightPanel
-                    type="followers"
-                    username={user.username}
-                    isModal
-                  />
+                  <RightPanel/>
                 </div>
 
                 <form method="dialog" className="modal-backdrop">

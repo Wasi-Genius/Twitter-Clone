@@ -4,6 +4,8 @@ import Notification from "../models/notification.model.js";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 
+import mongoose from "mongoose";
+
 // Get user profile
 export const getUserProfile = async (req, res) => {
     const { username } = req.params;
@@ -102,36 +104,39 @@ export const followUnfollowUser = async (req, res) => {
     }
 };
 
-// Get suggested users
+
 export const getSuggestedUsers = async (req, res) => {
-    try {
-        const userId = req.user._id;
+	try {
+		const userId = req.user._id;
 
-        // Get the list of users you follow
-        const { following } = await User.findById(userId).select("following");
+		const usersFollowedByMe = await User.findById(userId).select("following");
 
-        // Build an exclusion list: yourself + people you follow
-        const excludedUserIds = [userId, ...following];
+		const users = await User.aggregate([
+			{
+				$match: {
+					_id: { $ne: userId },
+				},
+			},
+			{ $sample: { size: 10 } },
+            {
+                $project: {
+                    password: 0, // exclude password
+                },
+            },
+		]);
 
-        // Fetch up to 4 random users NOT in the exclusion list
-        const users = await User.aggregate([
-            { $match: { _id: { $nin: excludedUserIds } } },
-            { $sample: { size: 4 } }
-        ]);
+		const filteredUsers = users.filter((user) => !usersFollowedByMe.following.includes(user._id));
+		const suggestedUsers = filteredUsers.slice(0, 4);
 
-        // Remove password field just in case
-        const suggestedUsers = users.map(user => {
-            user.password = null;
-            return user;
-        });
+		suggestedUsers.forEach((user) => (user.password = null));
 
-        res.status(200).json({ users: suggestedUsers });
-    } catch (error) {
-        console.log("Error in getSuggestedUsers:", error);
-        res.status(500).json({ error: error.message });
-    }
+		res.status(200).json(suggestedUsers);
+
+	} catch (error) {
+		console.log("Error in getSuggestedUsers: ", error.message);
+		res.status(500).json({ error: error.message });
+	}
 };
-
 
 // Update user profile info, including password and images
 export const updateUserProfile = async (req, res) => {

@@ -7,6 +7,7 @@ import useFollow from "../../hooks/userFollow";
 // Fetch helpers
 const fetchSuggestedUsers = async () => {
 	try {
+
 		console.log("[fetchSuggestedUsers] Fetching suggested users...");
 		const res = await fetch("/api/users/suggested");
 		const data = await res.json();
@@ -18,12 +19,14 @@ const fetchSuggestedUsers = async () => {
 			throw new Error(data.error || "Failed to fetch suggested users");
 		}
 
-		return data.users;
+		return data;
 	} catch (error) {
 		console.error("[fetchSuggestedUsers] Exception:", error.message);
 		throw new Error(error.message || "Error fetching suggested users");
 	}
 };
+
+/*
 
 const fetchFollowers = async (userId) => {
   try {
@@ -67,18 +70,13 @@ const fetchFollowing = async (userId) => {
   }
 };
 
-const RightPanel = ({ type = "suggested", username, isModal = false }) => {
-	console.log("[RightPanel] Rendered with props:", { type, username, isModal });
+*/
+
+const RightPanel = ({ username}) => {
 
 	const { data: users, isLoading, error } = useQuery({
-		queryKey: [type, username],
-		queryFn: () => {
-			console.log("[useQuery] Running query for:", { type, username });
-			if (type === "followers") return fetchFollowers(username);
-			if (type === "following") return fetchFollowing(username);
-			return fetchSuggestedUsers();
-		},
-		enabled: type === "suggested" || !!username,
+		queryKey: ["suggestedUsers"],
+		queryFn: fetchSuggestedUsers,
 	});
 
 	const { follow, isPending } = useFollow();
@@ -88,12 +86,11 @@ const RightPanel = ({ type = "suggested", username, isModal = false }) => {
 	}
 
 	// If no users, show invisible box (keeps layout consistent for suggested)
-	if (!isLoading && (!users || users.length === 0) && !isModal) {
-		console.warn("[RightPanel] No users returned for type:", type);
+	if (!isLoading && (!users || users.length === 0)) {
 		return (
 			<div className="hidden lg:block my-4 mx-2">
-				<div className="invisible p-4 rounded-md sticky top-2">
-					<p className="font-bold">Who to follow:</p>
+				<div className="bg-[#16181C] p-4 rounded-md sticky top-2">
+					<p className="font-bold">Wow you have somehow followed everyone!</p>
 				</div>
 			</div>
 		);
@@ -102,14 +99,11 @@ const RightPanel = ({ type = "suggested", username, isModal = false }) => {
 	console.log("[RightPanel] Users data:", users);
 
 	return (
-		<div className={`my-4 mx-2 ${isModal ? "block" : "hidden lg:block"}`}>
+		<div className={`my-4 mx-2 "hidden lg:block"`}>
 			<div className="bg-[#16181C] p-4 rounded-md sticky top-2">
+
 				<p className="font-bold">
-					{type === "followers"
-						? "Followers"
-						: type === "following"
-						? "Following"
-						: "Who to follow"}
+					{"Who to follow"}
 				</p>
 
 				<div className="flex flex-col gap-4">
@@ -148,25 +142,25 @@ const RightPanel = ({ type = "suggested", username, isModal = false }) => {
 										</div>
 
 										{/* Only show Follow button for suggested users */}
-										{type === "suggested" && (
-											<button
-												className="btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm"
-												onClick={(e) => {
-													e.preventDefault();
-													console.log(
-														"[RightPanel] Follow clicked for user:",
-														user._id
-													);
-													follow(user._id);
-												}}
-											>
-												{isPending ? (
-													<LoadingSpinner size="sm" />
-												) : (
-													"Follow"
-												)}
-											</button>
-										)}
+										
+										<button
+											className="btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm"
+											onClick={(e) => {
+												e.preventDefault();
+												console.log(
+													"[RightPanel] Follow clicked for user:",
+													user._id
+												);
+												follow(user._id);
+											}}
+										>
+											{isPending ? (
+												<LoadingSpinner size="sm" />
+											) : (
+												"Follow"
+											)}
+										</button>
+										
 									</Link>
 								);
 						  })}
