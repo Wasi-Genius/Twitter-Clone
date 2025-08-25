@@ -14,8 +14,8 @@ export const getUserProfile = async (req, res) => {
         const user = await User.findOne({ username })
         .select("-password")
         .populate([
-            { path: "followers", select: "username fullName" },
-            { path: "following", select: "username fullName" }
+            { path: "followers", select: "username fullName profileImg" },
+            { path: "following", select: "username fullName profileImg" }
         ]);
         
         if (!user) {
@@ -26,58 +26,6 @@ export const getUserProfile = async (req, res) => {
 
     } catch (error) {
         console.log("Error in getUserProfile:", error);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-//Is this only for the current logged in user or does this also work for the current profile being views 
-
-// Get user followers 
-export const getUserFollowers = async (req, res) => {
-    try {
-        
-        const user = await User.findById( req.user._id )
-        .populate({
-            path: "followers",
-            select: "username profileImg"
-        })
-        .select("-password");
-        
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found!" });
-        }
-
-        console.log("Fetched followers:", user.followers);
-
-        return res.status(200).json(user.followers || []);
-
-    } catch (error) {
-        console.log("Error in getUserFollowers:", error);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Get users that the profile user is following
-export const getUserFollowing = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.userId || req.user._id)
-        .populate({
-            path: "following",
-            select: "username profileImg fullName"
-        })
-        .select("-password");
-            
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found!" });
-        }
-
-        console.log("Fetched following:", user.following); 
-
-        return res.status(200).json(user.following || []);
-    } catch (error) {
-        console.log("Error in getUserFollowing:", error);
         res.status(500).json({ error: error.message });
     }
 };

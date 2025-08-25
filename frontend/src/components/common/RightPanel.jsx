@@ -25,51 +25,6 @@ const fetchSuggestedUsers = async () => {
 	}
 };
 
-/*
-
-const fetchFollowers = async (userId) => {
-  try {
-    console.log(`[fetchFollowers] Fetching followers for userId=${userId}...`);
-
-    const res = await fetch(`/api/users/followers/${userId}`);
-    const data = await res.json();
-
-    console.log(`[fetchFollowers] Response for userId=${userId}:`, data);
-
-    if (!res.ok) {
-      console.error("[fetchFollowers] Error:", data.error);
-      throw new Error(data.error || "Failed to fetch followers");
-    }
-
-    return data;
-  } catch (error) {
-    console.error("[fetchFollowers] Exception:", error.message);
-    throw new Error(error.message || "Error fetching followers");
-  }
-};
-
-const fetchFollowing = async (userId) => {
-  try {
-    console.log(`[fetchFollowing] Fetching following for userId=${userId}...`);
-
-    const res = await fetch(`/api/users/following/${userId}`);
-    const data = await res.json();
-
-    console.log(`[fetchFollowing] Response for userId=${userId}:`, data);
-
-    if (!res.ok) {
-      console.error("[fetchFollowing] Error:", data.error);
-      throw new Error(data.error || "Failed to fetch following");
-    }
-
-    return data;
-  } catch (error) {
-    console.error("[fetchFollowing] Exception:", error.message);
-    throw new Error(error.message || "Error fetching following");
-  }
-};
-
-*/
 
 const RightPanel = () => {
 
