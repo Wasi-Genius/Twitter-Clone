@@ -9,11 +9,9 @@ import { useEffect } from "react";
 const fetchSuggestedUsers = async () => {
 	try {
 
-		console.log("[fetchSuggestedUsers] Fetching suggested users...");
 		const res = await fetch("/api/users/suggested");
 		const data = await res.json();
 
-		console.log("[fetchSuggestedUsers] Response:", data);
 
 		if (!res.ok) {
 			console.error("[fetchSuggestedUsers] Error:", data.error);
@@ -107,8 +105,6 @@ const RightPanel = () => {
 		);
 	}
 
-	console.log("[RightPanel] Users data:", users);
-
 	return (
 		<div className={`my-4 mx-2 "hidden lg:block"`}>
 			<div className="bg-[#16181C] p-4 rounded-md sticky top-2">
@@ -123,7 +119,6 @@ const RightPanel = () => {
 								<RightPanelSkeleton key={idx} />
 						  ))
 						: users?.map((user) => {
-								console.log("[RightPanel] Rendering user:", user);
 								return (
 									<Link
 										to={`/profile/${user.username}`}
@@ -158,10 +153,7 @@ const RightPanel = () => {
 											className="btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm"
 											onClick={(e) => {
 												e.preventDefault();
-												console.log(
-													"[RightPanel] Follow clicked for user:",
-													user._id
-												);
+												
 												follow(user._id);
 											}}
 										>

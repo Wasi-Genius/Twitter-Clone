@@ -4,7 +4,6 @@ import Notification from "../models/notification.model.js";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 
-import mongoose from "mongoose";
 
 // Get user profile
 export const getUserProfile = async (req, res) => {
@@ -16,23 +15,33 @@ export const getUserProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+
         return res.status(200).json(user);
+
     } catch (error) {
         console.log("Error in getUserProfile:", error);
         res.status(500).json({ error: error.message });
     }
 };
 
+
 // Get user followers 
 export const getUserFollowers = async (req, res) => {
-   
     try {
         
-        const user = await User.findById(req.user._id).select("-password");
-            
+        const user = await User.findById(req.user._id)
+        .populate({
+            path: "followers",
+            select: "username fullName profileImg"
+        })
+        .select("-password");
+        
+
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
+
+        console.log("Fetched followers:", user.followers); // DEBUG
 
         return res.status(200).json(user.followers || []);
     } catch (error) {
@@ -41,17 +50,22 @@ export const getUserFollowers = async (req, res) => {
     }
 };
 
-
 // Get user following
 export const getUserFollowing = async (req, res) => {
-  
     try {
+        const user = await User.findById(req.user._id)
+        .populate({
+            path: "following",
+            select: "username fullName profileImg"
+        })
+        .select("-password");
+            
 
-        const user = await User.findById(req.user._id).select("-password");
-    
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
+
+        console.log("Fetched following:", user.following); // DEBUG
 
         return res.status(200).json(user.following || []);
     } catch (error) {
@@ -59,6 +73,7 @@ export const getUserFollowing = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Follow or unfollow a user
 export const followUnfollowUser = async (req, res) => {
@@ -104,7 +119,7 @@ export const followUnfollowUser = async (req, res) => {
     }
 };
 
-
+// Get the suggested users
 export const getSuggestedUsers = async (req, res) => {
 	try {
 		const userId = req.user._id;

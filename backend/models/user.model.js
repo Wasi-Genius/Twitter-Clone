@@ -25,21 +25,21 @@ const userSchema = new mongoose.Schema({
         unique: true, 
     },
 
-    followers: [
+    followers: 
         {
             type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
             default: []
         }
 
-    ],
+    ,
 
-    following: [
+    following: 
         {
             type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
             default: []
         }
 
-    ], 
+    , 
 
     profileImg:{
         type: String, 
