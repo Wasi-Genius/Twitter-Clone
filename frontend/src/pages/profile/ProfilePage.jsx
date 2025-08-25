@@ -72,6 +72,14 @@ const ProfilePage = () => {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      console.log("[ProfilePage] user profile data:", user);
+      console.log("[ProfilePage] followers array:", user.followers);
+      console.log("[ProfilePage] following array:", user.following);
+    }
+  }, [user]);
+
   // Update profile
   const { mutateAsync: updateProfile, isPending: isUpdatingProfile } =
     useMutation({
@@ -160,9 +168,7 @@ const ProfilePage = () => {
 
   // ---------------------- JSX ----------------------
   return (
-    
     <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
-
       {/* Skeleton or Error State */}
       {(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
       {!isLoading && !isRefetching && !user && (
@@ -308,10 +314,16 @@ const ProfilePage = () => {
                 className="flex gap-1 items-center cursor-pointer"
                 onClick={() => {
                   setProfileModalType(true);
-                  document.getElementById(`followFollowers_modal_${user._id}`).showModal();
+                  document
+                    .getElementById(`followFollowers_modal_${user._id}`)
+                    .showModal();
+                  console.log(
+                    "[ProfilePage] Opening Following modal for user:",
+                    user._id
+                  );
+                  console.log("[ProfilePage] following array:", user.following);
                 }}
               >
-
                 <span className="font-bold text-sm">
                   {user?.following.length}
                 </span>
@@ -324,78 +336,104 @@ const ProfilePage = () => {
                 className="flex gap-1 items-center cursor-pointer"
                 onClick={() => {
                   setProfileModalType(false);
-                  document.getElementById(`followFollowers_modal_${user._id}`).showModal();
+                  document
+                    .getElementById(`followFollowers_modal_${user._id}`)
+                    .showModal();
+                  console.log(
+                    "[ProfilePage] Opening Following modal for user:",
+                    user._id
+                  );
+                  console.log("[ProfilePage] following array:", user.following);
                 }}
               >
                 <span className="font-bold text-sm">
                   {user?.followers.length}
                 </span>
-                
+
                 <span className="text-slate-500 text-sm">Followers</span>
               </div>
-
             </div>
-            
+
             {/* Followers and Following Modal */}
-            <dialog id={`followFollowers_modal_${user._id}`} className="modal border-none outline-none">
+            <dialog
+              id={`followFollowers_modal_${user._id}`}
+              className="modal border-none outline-none"
+            >
+              <div className="modal-box rounded border border-gray-600 max-w-2xl">
+                {profileModalType ? (
+                  <h3 className="font-bold text-lg mb-4"> Following: </h3>
+                ) : (
+                  <h3 className="font-bold text-lg mb-4"> Followers: </h3>
+                )}
 
-              <div className = "modal-box rounded border border-gray-600 max-w-2xl">
+                <div className="flex flex-col gap-3 max-h-80 overflow-auto">
+                  {user.followers.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      {" "}
+                      No followers at the moment.
+                    </p>
+                  ) : user.following.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      {" "}
+                      Not following anyone at the moment .
+                    </p>
+                  ) : (
+                    user.following.map((followingUser) => {
+                      if (!followingUser) {
+                        console.warn(
+                          "[ProfilePage] followingUser is undefined or null!"
+                        );
+                      }
 
-                { 
-                  profileModalType ? <h3 className="font-bold text-lg mb-4"> Following: </h3> : <h3 className="font-bold text-lg mb-4"> Followers: </h3>
-                }
+                      console.log(
+                        "[ProfilePage] followingUser object:",
+                        followingUser
+                      );
+                      console.log(
+                        "[ProfilePage] followingUser username:",
+                        followingUser?.username
+                      );
 
-                  <div className="flex flex-col gap-3 max-h-80 overflow-auto">
-                    {
-                        user.followers.length === 0 ? 
-                        (<p className="text-sm text-slate-500"> No followers at the moment.</p>) : 
-
-                        user.following.length === 0 ?
-                        (<p className="text-sm text-slate-500"> Not following anyone at the moment .</p>) : 
-                        
-                        (
-                          user.following.map((followingUser) => {
-                          return (
-                     
-                            <div key={followingUser._id} className="flex gap-2 items-start">
-
-                                {console.log(followingUser)}
-
-                                {/* User Avatar */}
-                                <div className="avatar">
-                                  <div className="w-8 rounded-full">
-                                    <img
-                                      src={followingUser.profileImg || "/avatar-placeholder.png"}
-                                      alt={`${followingUser.fullName} profile`}
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* User info */}
-                                <div className="flex flex-col">
-                                  <div className="flex items-center gap-1">
-                                    {console.log(followingUser.fullName)}
-                                    <span className="font-bold">{followingUser.fullName}</span>
-                                    <span className="text-gray-500 text-sm">@{followingUser.username}</span>
-                                  </div>
-                              </div> 
-                        
+                      return (
+                        <div
+                          key={followingUser._id}
+                          className="flex gap-2 items-start"
+                        >
+                          {/* User Avatar */}
+                          <div className="avatar">
+                            <div className="w-8 rounded-full">
+                              <img
+                                src={
+                                  followingUser.profileImg ||
+                                  "/avatar-placeholder.png"
+                                }
+                                alt={`${followingUser.username} profile`}
+                              />
                             </div>
-                        )
-                        
-                      })
-                  )} 
-                  
-                </div>
+                          </div>
 
+                          {/* User info */}
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-1">
+                              <span className="font-bold">
+                                {followingUser.username}
+                              </span>
+                              <span className="text-gray-500 text-sm">
+                                @{followingUser.username}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               </div>
 
               <form method="dialog" className="modal-backdrop">
                 <button className="outline-none">close</button>
               </form>
-
             </dialog>
-
           </div>
 
           {/* Tabs: Posts / Likes / Bookmarks*/}
@@ -430,7 +468,8 @@ const ProfilePage = () => {
                 {feedType === "bookmarks" && (
                   <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
                 )}
-            </div>)}
+              </div>
+            )}
           </div>
         </>
       )}
