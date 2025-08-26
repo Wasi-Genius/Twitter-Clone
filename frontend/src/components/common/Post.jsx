@@ -299,7 +299,7 @@ const Post = ({ post }) => {
 
             {/* Comment Modal */}
             <dialog id={`comments_modal${post._id}`} className="modal border-none outline-none">
-              <div className="modal-box rounded border border-gray-600 max-w-2xl">
+              <div className="modal-box rounded border border-gray-600 max-w-lg">
 
                 <h3 className="font-bold text-lg mb-4">COMMENTS</h3>
 

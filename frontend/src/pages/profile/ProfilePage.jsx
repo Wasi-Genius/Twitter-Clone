@@ -20,464 +20,403 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 const ProfilePage = () => {
-  // ---------------------- State ----------------------
-  const [bannerImg, setCoverImg] = useState(null);
-  const [profileImg, setProfileImg] = useState(null);
-  const [feedType, setFeedType] = useState("posts");
-  const [profileModalType, setProfileModalType] = useState(null);
+	// ---------------------- State ----------------------
+	const [bannerImg, setCoverImg] = useState(null);
+	const [profileImg, setProfileImg] = useState(null);
+	const [feedType, setFeedType] = useState("posts");
+	const [profileModalType, setProfileModalType] = useState(null);
 
-  // ---------------------- Refs ----------------------
-  const coverImgRef = useRef(null);
-  const profileImgRef = useRef(null);
+	// ---------------------- Refs ----------------------
+	const coverImgRef = useRef(null);
+	const profileImgRef = useRef(null);
 
-  // ---------------------- Params ----------------------
-  const { username } = useParams();
+	// ---------------------- Params ----------------------
+	const { username } = useParams();
 
-  // ---------------------- Custom Hooks ----------------------
-  const { follow, isPending } = useFollow();
-  const queryClient = useQueryClient();
+	// ---------------------- Custom Hooks ----------------------
+	const { follow, isPending } = useFollow();
+	const queryClient = useQueryClient();
 
-  // ---------------------- Queries ----------------------
+	// ---------------------- Queries ----------------------
 
-  // Get logged-in user
-  const { data: authUser } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      const res = await fetch("/api/auth/me");
-      if (!res.ok) throw new Error("Failed to fetch auth user");
-      return res.json();
-    },
-  });
+	// Get logged-in user
+	const { data: authUser } = useQuery({
+		queryKey: ["authUser"],
+		queryFn: async () => {
+			const res = await fetch("/api/auth/me");
+			if (!res.ok) throw new Error("Failed to fetch auth user");
+			return res.json();
+		},
+	});
 
-  // Get profile user
-  const {
-    data: user,
-    isLoading,
-    refetch,
-    isRefetching,
-  } = useQuery({
-    queryKey: ["userProfile", username],
-    queryFn: async () => {
-      try {
-        const res = await fetch(`/api/users/profile/${username}`);
-        const data = await res.json();
+	// Get profile user
+	const {
+		data: user,
+		isLoading,
+		refetch,
+		isRefetching,
+	} = useQuery({
+		queryKey: ["userProfile", username],
+		queryFn: async () => {
+			try {
+				const res = await fetch(`/api/users/profile/${username}`);
+				const data = await res.json();
 
-        if (!res.ok)
-          throw new Error(data.error || "Failed to fetch user profile");
+				if (!res.ok) throw new Error(data.error || "Failed to fetch user profile");
 
-        return data;
-      } catch (error) {
-        throw new Error(error.message || "Failed to fetch user profile");
-      }
-    },
-  });
+				return data;
+			} catch (error) {
+				throw new Error(error.message || "Failed to fetch user profile");
+			}
+		},
+	});
 
-  useEffect(() => {
-    if (user) {
-      console.log("[ProfilePage] user profile data:", user);
-      console.log("[ProfilePage] followers array:", user.followers);
-      console.log("[ProfilePage] following array:", user.following);
-    }
-  }, [user]);
+	useEffect(() => {
+		if (user) {
+			console.log("[ProfilePage] user profile data:", user);
+			console.log("[ProfilePage] followers array:", user.followers);
+			console.log("[ProfilePage] following array:", user.following);
+		}
+	}, [user]);
 
-  // Update profile
-  const { mutateAsync: updateProfile, isPending: isUpdatingProfile } =
-    useMutation({
-      mutationFn: async () => {
-        try {
-          const res = await fetch(`/api/users/update`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              coverImg: bannerImg,
-              profileImg,
-            }),
-          });
+	// Update profile
+	const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/users/update`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						coverImg: bannerImg,
+						profileImg,
+					}),
+				});
 
-          const data = await res.json();
+				const data = await res.json();
 
-          if (!res.ok) {
-            throw new Error(data.error || "Something went wrong");
-          }
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
 
-          return data;
-        } catch (error) {
-          console.error("[updateProfile] Error:", error);
-          throw new Error(error.message || "Something went wrong");
-        }
-      },
+				return data;
+			} catch (error) {
+				console.error("[updateProfile] Error:", error);
+				throw new Error(error.message || "Something went wrong");
+			}
+		},
 
-      onSuccess: (updatedUser) => {
-        const username = updatedUser?.username;
-        if (!username) {
-          console.warn("[updateProfile] No username found in updated user.");
-        } else {
-          console.log(
-            `[updateProfile] Invalidating queries for userProfile: ${username}`
-          );
-        }
+		onSuccess: (updatedUser) => {
+			const username = updatedUser?.username;
+			if (!username) {
+				console.warn("[updateProfile] No username found in updated user.");
+			} else {
+				console.log(`[updateProfile] Invalidating queries for userProfile: ${username}`);
+			}
 
-        toast.success("Profile updated successfully");
+			toast.success("Profile updated successfully");
 
-        Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["authUser"] }),
-          queryClient.invalidateQueries({
-            queryKey: ["userProfile", username],
-          }),
-        ]);
-      },
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+				queryClient.invalidateQueries({
+					queryKey: ["userProfile", username],
+				}),
+			]);
+		},
 
-      onError: (error) => {
-        console.error("[updateProfile] Mutation error:", error);
-        toast.error(error.message);
-      },
-    });
+		onError: (error) => {
+			console.error("[updateProfile] Mutation error:", error);
+			toast.error(error.message);
+		},
+	});
 
-  // ---------------------- Derived Values ----------------------
-  const isMyProfile = authUser?._id === user?._id;
-  const memberSince = formatMemberSinceDate(user?.createdAt);
-  const amIFollowing = authUser?.following?.includes(user?._id);
+	// ---------------------- Derived Values ----------------------
+	const isMyProfile = authUser?._id === user?._id;
+	const memberSince = formatMemberSinceDate(user?.createdAt);
+	const amIFollowing = authUser?.following?.includes(user?._id);
 
-  // ---------------------- Handlers ----------------------
-  const handleImgChange = (e, state) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        state === "coverImg" && setCoverImg(reader.result);
-        state === "profileImg" && setProfileImg(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+	// ---------------------- Handlers ----------------------
+	const handleImgChange = (e, state) => {
+		const file = e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = () => {
+				state === "coverImg" && setCoverImg(reader.result);
+				state === "profileImg" && setProfileImg(reader.result);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 
-  useEffect(() => {
-    refetch();
-    setFeedType("posts");
-  }, [username, refetch]);
+	useEffect(() => {
+		refetch();
+		setFeedType("posts");
+	}, [username, refetch]);
 
-  const normalizeLink = (url) => {
-    if (!url) return "";
-    if (!/^https?:\/\//i.test(url)) {
-      return "https://" + url;
-    }
-    return url;
-  };
+	const normalizeLink = (url) => {
+		if (!url) return "";
+		if (!/^https?:\/\//i.test(url)) {
+			return "https://" + url;
+		}
+		return url;
+	};
 
-  // ---------------------- JSX ----------------------
-  return (
-    <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
-      {/* Skeleton or Error State */}
-      {(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
-      {!isLoading && !isRefetching && !user && (
-        <p className="text-center text-lg mt-4">User not found</p>
-      )}
+	// ---------------------- JSX ----------------------
+	return (
+		<div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
+			{/* Skeleton or Error State */}
+			{(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
+			{!isLoading && !isRefetching && !user && (
+				<p className="text-center text-lg mt-4">User not found</p>
+			)}
 
-      {/* Profile Header & Info */}
-      {!isLoading && !isRefetching && user && (
-        <>
-          {/* Bottom Left Profile Section */}
-          <div className="flex gap-10 px-4 py-2 items-center">
-            <Link to="/">
-              <FaArrowLeft className="w-4 h-4" />
-            </Link>
-            <div className="flex flex-col">
-              <p className="font-bold text-lg">{user?.fullName}</p>
-            </div>
-          </div>
+			{/* Profile Header & Info */}
+			{!isLoading && !isRefetching && user && (
+				<>
+					{/* Bottom Left Profile Section */}
+					<div className="flex gap-10 px-4 py-2 items-center">
+						<Link to="/">
+							<FaArrowLeft className="w-4 h-4" />
+						</Link>
+						<div className="flex flex-col">
+							<p className="font-bold text-lg">{user?.fullName}</p>
+						</div>
+					</div>
 
-          {/* Banner Image + Edit */}
-          <div className="relative group/cover">
-            <img
-              src={bannerImg || user?.coverImg || "/banner-placeholder.png"}
-              className="h-52 w-full object-cover"
-              alt="banner image"
-            />
+					{/* Banner Image + Edit */}
+					<div className="relative group/cover">
+						<img
+							src={bannerImg || user?.coverImg || "/banner-placeholder.png"}
+							className="h-52 w-full object-cover"
+							alt="banner image"
+						/>
 
-            {/* Edit Banner Image */}
-            {isMyProfile && (
-              <div
-                className="absolute top-2 right-2 rounded-full p-2 bg-gray-800 bg-opacity-75 cursor-pointer opacity-0 group-hover/cover:opacity-100 transition duration-200"
-                onClick={() => coverImgRef.current.click()}
-              >
-                <MdEdit className="w-5 h-5 text-white" />
-              </div>
-            )}
+						{/* Edit Banner Image */}
+						{isMyProfile && (
+							<div
+								className="absolute top-2 right-2 rounded-full p-2 bg-gray-800 bg-opacity-75 cursor-pointer opacity-0 group-hover/cover:opacity-100 transition duration-200"
+								onClick={() => coverImgRef.current.click()}
+							>
+								<MdEdit className="w-5 h-5 text-white" />
+							</div>
+						)}
 
-            {/* Hidden File Inputs */}
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              ref={coverImgRef}
-              onChange={(e) => handleImgChange(e, "coverImg")}
-            />
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              ref={profileImgRef}
-              onChange={(e) => handleImgChange(e, "profileImg")}
-            />
+						{/* Hidden File Inputs */}
+						<input
+							type="file"
+							hidden
+							accept="image/*"
+							ref={coverImgRef}
+							onChange={(e) => handleImgChange(e, "coverImg")}
+						/>
+						<input
+							type="file"
+							hidden
+							accept="image/*"
+							ref={profileImgRef}
+							onChange={(e) => handleImgChange(e, "profileImg")}
+						/>
 
-            {/* Avatar */}
-            <div className="avatar absolute -bottom-16 left-4">
-              <div className="w-32 rounded-full relative group/avatar">
-                <img
-                  src={
-                    profileImg || user?.profileImg || "/avatar-placeholder.png"
-                  }
-                />
-                <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
-                  {isMyProfile && (
-                    <MdEdit
-                      className="w-4 h-4 text-white"
-                      onClick={() => profileImgRef.current.click()}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+						{/* Avatar */}
+						<div className="avatar absolute -bottom-16 left-4">
+							<div className="w-32 rounded-full relative group/avatar">
+								<img src={profileImg || user?.profileImg || "/avatar-placeholder.png"} />
+								<div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
+									{isMyProfile && (
+										<MdEdit
+											className="w-4 h-4 text-white"
+											onClick={() => profileImgRef.current.click()}
+										/>
+									)}
+								</div>
+							</div>
+						</div>
+					</div>
 
-          {/* Buttons (Edit / Follow / Update) */}
-          <div className="flex justify-end px-4 mt-5">
-            {isMyProfile && <EditProfileModal authUser={authUser} />}
+					{/* Buttons (Edit / Follow / Update) */}
+					<div className="flex justify-end px-4 mt-5">
+						{isMyProfile && <EditProfileModal authUser={authUser} />}
 
-            {!isMyProfile && (
-              <button
-                className="btn btn-outline rounded-full btn-sm"
-                onClick={() => follow(user?._id)}
-              >
-                {isPending && "Loading..."}
-                {!isPending && amIFollowing && "Unfollow"}
-                {!isPending && !amIFollowing && "Follow"}
-              </button>
-            )}
+						{!isMyProfile && (
+							<button
+								className="btn btn-outline rounded-full btn-sm"
+								onClick={() => follow(user?._id)}
+							>
+								{isPending && "Loading..."}
+								{!isPending && amIFollowing && "Unfollow"}
+								{!isPending && !amIFollowing && "Follow"}
+							</button>
+						)}
 
-            {(bannerImg || profileImg) && (
-              <button
-                className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                onClick={async () => {
-                  await updateProfile({ coverImg: bannerImg, profileImg });
-                  setProfileImg(null);
-                  setCoverImg(null);
-                }}
-              >
-                {isUpdatingProfile ? "Updating..." : "Update"}
-              </button>
-            )}
-          </div>
+						{(bannerImg || profileImg) && (
+							<button
+								className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
+								onClick={async () => {
+									await updateProfile({ coverImg: bannerImg, profileImg });
+									setProfileImg(null);
+									setCoverImg(null);
+								}}
+							>
+								{isUpdatingProfile ? "Updating..." : "Update"}
+							</button>
+						)}
+					</div>
 
-          {/* Profile Info Section */}
+					{/* Profile Info Section */}
 
-          {/* User Information*/}
-          <div className="flex flex-col gap-4 mt-8 px-4">
-            <div className="flex flex-col">
-              <span className="font-bold text-lg">{user?.fullName}</span>
-              <span className="text-base text-slate-500">
-                @{user?.username}
-              </span>
-              <span className="text-lg">{user?.bio}</span>
-            </div>
+					{/* User Information*/}
+					<div className="flex flex-col gap-4 mt-8 px-4">
+						<div className="flex flex-col">
+							<span className="font-bold text-lg">{user?.fullName}</span>
+							<span className="text-base text-slate-500">@{user?.username}</span>
+							<span className="text-lg">{user?.bio}</span>
+						</div>
 
-            {/* Link */}
-            <div className="flex gap-2 flex-wrap -mt-2">
-              {user?.link && (
-                <div className="flex gap-1 items-center ">
-                  <FaLink className="w-3 h-3 text-slate-500" />
-                  <a
-                    href={normalizeLink(user.link)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-base text-blue-500 hover:underline"
-                  >
-                    {user.link}
-                  </a>
-                </div>
-              )}
-            </div>
+						{/* Link */}
+						<div className="flex gap-2 flex-wrap -mt-2">
+							{user?.link && (
+								<div className="flex gap-1 items-center ">
+									<FaLink className="w-3 h-3 text-slate-500" />
+									<a
+										href={normalizeLink(user.link)}
+										target="_blank"
+										rel="noreferrer"
+										className="text-base text-blue-500 hover:underline"
+									>
+										{user.link}
+									</a>
+								</div>
+							)}
+						</div>
 
-            {/* Join Date */}
-            <div className="flex gap-2 items-center">
-              <IoCalendarOutline className="w-4 h-4 text-slate-500" />
-              <span className="text-sm text-slate-500">{memberSince}</span>
-            </div>
+						{/* Join Date */}
+						<div className="flex gap-2 items-center">
+							<IoCalendarOutline className="w-4 h-4 text-slate-500" />
+							<span className="text-sm text-slate-500">{memberSince}</span>
+						</div>
 
-            {/* Follow/Followers */}
+						{/* Follow/Followers */}
 
-            <div className="flex gap-4">
-              {/* Following */}
-              <div
-                className="flex gap-1 items-center cursor-pointer"
-                onClick={() => {
-                  setProfileModalType(true);
-                  document
-                    .getElementById(`followFollowers_modal_${user._id}`)
-                    .showModal();
-                  console.log(
-                    "[ProfilePage] Opening Following modal for user:",
-                    user._id
-                  );
-                  console.log("[ProfilePage] following array:", user.following);
-                }}
-              >
-                <span className="font-bold text-sm">
-                  {user?.following.length}
-                </span>
+						<div className="flex gap-4">
+							{/* Following */}
+							<div
+								className="flex gap-1 items-center cursor-pointer"
+								onClick={() => {
+									setProfileModalType("following");
+									document.getElementById(`followFollowers_modal_${user._id}`).showModal();
+								}}
+							>
+								<span className="font-bold text-sm">{user?.following.length}</span>
+								<span className="text-slate-500 text-sm">Following</span>
+							</div>
 
-                <span className="text-slate-500 text-sm">Following</span>
-              </div>
+							{/* Followers */}
+							<div
+								className="flex gap-1 items-center cursor-pointer"
+								onClick={() => {
+									setProfileModalType("followers");
+									document.getElementById(`followFollowers_modal_${user._id}`).showModal();
+								}}
+							>
+								<span className="font-bold text-sm">{user?.followers.length}</span>
+								<span className="text-slate-500 text-sm">Followers</span>
+							</div>
+						</div>
 
-              {/* Followers */}
-              <div
-                className="flex gap-1 items-center cursor-pointer"
-                onClick={() => {
-                  setProfileModalType(false);
-                  document
-                    .getElementById(`followFollowers_modal_${user._id}`)
-                    .showModal();
-                  console.log(
-                    "[ProfilePage] Opening Following modal for user:",
-                    user._id
-                  );
-                  console.log("[ProfilePage] following array:", user.following);
-                }}
-              >
-                <span className="font-bold text-sm">
-                  {user?.followers.length}
-                </span>
+						{/* Followers and Following Modal */}
+						<dialog
+							id={`followFollowers_modal_${user._id}`}
+							className="modal border-none outline-none"
+						>
+							<div className="modal-box rounded border border-gray-600 max-w-md">
+								<h3 className="font-bold text-lg mb-4">
+									{profileModalType === "following" ? "Following:" : "Followers:"}
+								</h3>
+								<div className="flex flex-col gap-3 max-h-80 overflow-auto">
+									{(profileModalType === "following" ? user.following : user.followers).length === 0 ? (
+										<p className="text-sm text-slate-500">
+											{profileModalType === "following"
+												? "Not following anyone at the moment."
+												: "No followers at the moment."}
+										</p>
+									) : (
+										(profileModalType === "following" ? user.following : user.followers).map(
+											(modalUser) => (
+												<Link
+													to={`/profile/${modalUser.username}`}
+													className="flex items-center justify-between gap-4"
+													key={modalUser._id}
+												>
+													<div className="flex gap-2 items-start">
+														<div className="avatar">
+															<div className="w-8 rounded-full">
+																<img
+																	src={modalUser.profileImg || "/avatar-placeholder.png"}
+																	alt={`${modalUser.username} profile`}
+																/>
+															</div>
+														</div>
+														<div className="flex flex-col">
+															<div className="flex items-center gap-1">
+																<span className="font-bold">{modalUser.username}</span>
+																<span className="text-gray-500 text-sm">@{modalUser.username}</span>
+															</div>
+														</div>
+													</div>
+												</Link>
+											)
+										)
+									)}
+								</div>
+							</div>
+							<form method="dialog" className="modal-backdrop">
+								<button className="outline-none">close</button>
+							</form>
+						</dialog>
+					</div>
 
-                <span className="text-slate-500 text-sm">Followers</span>
-              </div>
-            </div>
+					{/* Tabs: Posts / Likes / Bookmarks*/}
+					<div className="flex w-full border-b border-gray-700 mt-4">
+						<div
+							className="flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer"
+							onClick={() => setFeedType("posts")}
+						>
+							Posts
+							{feedType === "posts" && (
+								<div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
+							)}
+						</div>
 
-            {/* Followers and Following Modal */}
-            <dialog
-              id={`followFollowers_modal_${user._id}`}
-              className="modal border-none outline-none"
-            >
-              <div className="modal-box rounded border border-gray-600 max-w-2xl">
-                {profileModalType ? (
-                  <h3 className="font-bold text-lg mb-4"> Following: </h3>
-                ) : (
-                  <h3 className="font-bold text-lg mb-4"> Followers: </h3>
-                )}
+						<div
+							className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer"
+							onClick={() => setFeedType("likes")}
+						>
+							Likes
+							{feedType === "likes" && (
+								<div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
+							)}
+						</div>
 
-                <div className="flex flex-col gap-3 max-h-80 overflow-auto">
-                  {user.followers.length === 0 ? (
-                    <p className="text-sm text-slate-500">
-                      {" "}
-                      No followers at the moment.
-                    </p>
-                  ) : user.following.length === 0 ? (
-                    <p className="text-sm text-slate-500">
-                      {" "}
-                      Not following anyone at the moment .
-                    </p>
-                  ) : (
-                    user.following.map((followingUser) => {
-                      if (!followingUser) {
-                        console.warn(
-                          "[ProfilePage] followingUser is undefined or null!"
-                        );
-                      }
+						{isMyProfile && (
+							<div
+								className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer"
+								onClick={() => setFeedType("bookmarks")}
+							>
+								Bookmarks
+								{feedType === "bookmarks" && (
+									<div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
+								)}
+							</div>
+						)}
+					</div>
+				</>
+			)}
 
-                      console.log(
-                        "[ProfilePage] followingUser object:",
-                        followingUser
-                      );
-                      console.log(
-                        "[ProfilePage] followingUser username:",
-                        followingUser?.username
-                      );
-
-                      return (
-                        <div
-                          key={followingUser._id}
-                          className="flex gap-2 items-start"
-                        >
-                          {/* User Avatar */}
-                          <div className="avatar">
-                            <div className="w-8 rounded-full">
-                              <img
-                                src={
-                                  followingUser.profileImg ||
-                                  "/avatar-placeholder.png"
-                                }
-                                alt={`${followingUser.username} profile`}
-                              />
-                            </div>
-                          </div>
-
-                          {/* User info */}
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-1">
-                              <span className="font-bold">
-                                {followingUser.username}
-                              </span>
-                              <span className="text-gray-500 text-sm">
-                                @{followingUser.username}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-
-              <form method="dialog" className="modal-backdrop">
-                <button className="outline-none">close</button>
-              </form>
-            </dialog>
-          </div>
-
-          {/* Tabs: Posts / Likes / Bookmarks*/}
-
-          <div className="flex w-full border-b border-gray-700 mt-4">
-            <div
-              className="flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer"
-              onClick={() => setFeedType("posts")}
-            >
-              Posts
-              {feedType === "posts" && (
-                <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
-              )}
-            </div>
-
-            <div
-              className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer"
-              onClick={() => setFeedType("likes")}
-            >
-              Likes
-              {feedType === "likes" && (
-                <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
-              )}
-            </div>
-
-            {isMyProfile && (
-              <div
-                className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer"
-                onClick={() => setFeedType("bookmarks")}
-              >
-                Bookmarks
-                {feedType === "bookmarks" && (
-                  <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
-                )}
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* Posts Feed */}
-      <Posts feedType={feedType} username={username} userId={user?._id} />
-    </div>
-  );
+			{/* Posts Feed */}
+			<Posts feedType={feedType} username={username} userId={user?._id} />
+		</div>
+	);
 };
 
 export default ProfilePage;
