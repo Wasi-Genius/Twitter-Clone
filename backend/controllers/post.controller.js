@@ -5,418 +5,410 @@ import { v2 as cloudinary } from "cloudinary";
 
 // Create a new post
 export const createPost = async (req, res) => {
-  try {
-    const { text, img: rawImg } = req.body;
-    const userId = req.user._id.toString();
+	try {
+		const { text, img: rawImg } = req.body;
+		const userId = req.user._id.toString();
 
-    if (!text && !rawImg) {
-      return res.status(400).json({ message: "Text or image is required" });
-    }
+		if (!text && !rawImg) {
+			return res.status(400).json({ message: "Text or image is required" });
+		}
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ message: "User not found" });
 
-    let img = null;
-    if (rawImg) {
-      const uploadRes = await cloudinary.uploader.upload(rawImg);
-      img = uploadRes.secure_url;
-    }
+		let img = null;
+		if (rawImg) {
+			const uploadRes = await cloudinary.uploader.upload(rawImg);
+			img = uploadRes.secure_url;
+		}
 
-    const newPost = new Post({ user: userId, text, img });
-    await newPost.save();
+		const newPost = new Post({ user: userId, text, img });
+		await newPost.save();
 
-    return res.status(201).json({
-      message: "Post created successfully",
-      post: newPost,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(201).json({
+			message: "Post created successfully",
+			post: newPost,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
 // Delete a post
 export const deletePost = async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+	try {
+		const post = await Post.findById(req.params.id);
+		if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (post.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized to delete this post" });
-    }
+		if (post.user.toString() !== req.user._id.toString()) {
+			return res.status(403).json({ message: "Not authorized to delete this post" });
+		}
 
-    if (post.img) {
-      const publicId = post.img.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
-    }
+		if (post.img) {
+			const publicId = post.img.split("/").pop().split(".")[0];
+			await cloudinary.uploader.destroy(publicId);
+		}
 
-    await post.deleteOne();
-    return res.status(200).json({ message: "Post deleted successfully" });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		await post.deleteOne();
+		return res.status(200).json({ message: "Post deleted successfully" });
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
 // Comment on a post
 export const commentOnPost = async (req, res) => {
-  try {
-    const { text } = req.body;
-    const postId = req.params.id;
-    const userId = req.user._id;
+	try {
+		const { text } = req.body;
+		const postId = req.params.id;
+		const userId = req.user._id;
 
-    if (!text) {
-      return res.status(400).json({ message: "Text is required for comment" });
-    }
+		if (!text) {
+			return res.status(400).json({ message: "Text is required for comment" });
+		}
 
-    if (text.length > 2000) {
-      return res.status(400).json({ error: "Comments cannot be more than 2000 characters in length" });
-    }
+		if (text.length > 2000) {
+			return res
+				.status(400)
+				.json({ error: "Comments cannot be more than 2000 characters in length" });
+		}
 
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+		const post = await Post.findById(postId);
+		if (!post) return res.status(404).json({ message: "Post not found" });
 
-    const notification = new Notification ({
-        from: userId, 
-        to: post.user, 
-        type: "comment",
-    });
+		const notification = new Notification({
+			from: userId,
+			to: post.user,
+			type: "comment",
+		});
 
-    await notification.save();
+		await notification.save();
 
-    const comment = { text, user: userId };
-    post.comments.push(comment);
-    await post.save();
+		const comment = { text, user: userId };
+		post.comments.push(comment);
+		await post.save();
 
-    return res.status(201).json({
-      comment
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(201).json({
+			comment,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
-// Delete a comment 
+// Delete a comment
 export const deleteComment = async (req, res) => {
-  try {
+	try {
+		const { id, commentId } = req.params;
 
-    const { id, commentId } = req.params;
+		// Find the post
+		const post = await Post.findById(id);
+		if (!post) return res.status(404).json({ message: "Post not found" });
 
-    // Find the post
-    const post = await Post.findById(id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+		// Find the comment within that post
+		const comment = post.comments.id(commentId);
+		if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    // Find the comment within that post
-    const comment = post.comments.id(commentId);
-    if (!comment) return res.status(404).json({ message: "Comment not found" });
+		// Check if the user is authorized (only the comment author can delete)
+		if (
+			comment.user.toString() !== req.user._id.toString() &&
+			post.user.toString() !== req.user._id.toString()
+		) {
+			return res.status(403).json({ message: "Not authorized to delete this comment" });
+		}
 
-    // Check if the user is authorized (only the comment author can delete)
-    if(comment.user.toString() !== req.user._id.toString() &&
-     post.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized to delete this comment" });
-    }
-
-    await comment.deleteOne();
-    await post.save();
-    return res.status(200).json({ message: "Comment deleted successfully" });
-
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
-
-}
+		await comment.deleteOne();
+		await post.save();
+		return res.status(200).json({ message: "Comment deleted successfully" });
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
+};
 
 // Like or Unlike a post
 export const likeUnlikePost = async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const userId = req.user._id;
+	try {
+		const postId = req.params.id;
+		const userId = req.user._id;
 
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+		const post = await Post.findById(postId);
+		if (!post) return res.status(404).json({ message: "Post not found" });
 
-    let updatedLikes;
-    if (post.likes.includes(userId)) {
-      // Unlike
-      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-      await User.updateOne({ _id: userId }, { $pull: { likedPosts: postId } });
+		let updatedLikes;
+		if (post.likes.includes(userId)) {
+			// Unlike
+			await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+			await User.updateOne({ _id: userId }, { $pull: { likedPosts: postId } });
 
-      updatedLikes = post.likes.filter(id => id.toString() !== userId.toString());
-    } else {
-      // Like
-      post.likes.push(userId);
-      await post.save();
-      await User.updateOne({ _id: userId }, { $push: { likedPosts: postId } });
+			updatedLikes = post.likes.filter((id) => id.toString() !== userId.toString());
+		} else {
+			// Like
+			post.likes.push(userId);
+			await post.save();
+			await User.updateOne({ _id: userId }, { $push: { likedPosts: postId } });
 
-      const notification = new Notification({
-        from: userId,
-        to: post.user,
-        type: "like",
-      });
-      await notification.save();
+			const notification = new Notification({
+				from: userId,
+				to: post.user,
+				type: "like",
+			});
+			await notification.save();
 
-      updatedLikes = post.likes;
-    }
+			updatedLikes = post.likes;
+		}
 
-    return res.status(200).json({ updatedLikes });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(200).json({ updatedLikes });
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
-
-// Bookmark or Unbookmark a post 
+// Bookmark or Unbookmark a post
 export const bookmarkPost = async (req, res) => {
+	try {
+		const postId = req.params.id;
+		const userId = req.user._id;
 
-  try {
-    const postId = req.params.id;
-    const userId = req.user._id; 
+		const post = await Post.findById(postId);
 
-    const post = await Post.findById(postId);
+		if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (!post) return res.status(404).json({message: "Post not found"})
+		let updatedBookmarks;
 
-    let updatedBookmarks;
+		if (post.bookmarks.includes(userId)) {
+			// Unbookmark
+			await Post.updateOne({ _id: postId }, { $pull: { bookmarks: userId } });
+			await User.updateOne({ _id: userId }, { $pull: { bookmarkedPosts: postId } });
 
-    if (post.bookmarks.includes(userId)) {
-      // Unbookmark 
-      await Post.updateOne({ _id: postId}, {$pull: {bookmarks: userId}});
-      await User.updateOne({ _id: userId}, {$pull: {bookmarkedPosts: postId}});
+			updatedBookmarks = post.bookmarks.filter((id) => id.toString() !== userId.toString());
+		} else {
+			// Bookmark
+			post.bookmarks.push(userId);
+			await post.save();
+			await User.updateOne({ _id: userId }, { $push: { bookmarkedPosts: postId } });
 
-      updatedBookmarks = post.bookmarks.filter(id => id.toString() !== userId.toString());
-    } else {
+			const notification = new Notification({
+				from: userId,
+				to: post.user,
+				type: "bookmark",
+			});
 
-      // Bookmark
-      post.bookmarks.push(userId);
-      await post.save();
-      await User.updateOne({ _id: userId}, {$push: {bookmarkedPosts: postId}})
+			await notification.save();
 
-      const notification = new Notification ({
-        from: userId, 
-        to: post.user, 
-        type: "bookmark",
-      });
-
-      await notification.save();
-
-      updatedBookmarks = post.bookmarks; 
-    }
-    return res.status(200).json({ updatedBookmarks});
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message
-    });
-  }
-
-}
+			updatedBookmarks = post.bookmarks;
+		}
+		return res.status(200).json({ updatedBookmarks });
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
+};
 
 // Get all posts
 export const getAllPosts = async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .sort({ createdAt: -1 })
-      .populate("user", "-password")
-      .populate("comments.user", "-password")
-      .populate({
-        path: "repostOf",
-        populate: [
-          { path: "user", select: "-password" },
-          { path: "comments.user", select: "-password" },
-        ],
-      });
+	try {
+		const posts = await Post.find()
+			.sort({ createdAt: -1 })
+			.populate("user", "-password")
+			.populate("comments.user", "-password")
+			.populate({
+				path: "repostOf",
+				populate: [
+					{ path: "user", select: "-password" },
+					{ path: "comments.user", select: "-password" },
+				],
+			});
 
-    return res.status(200).json(posts);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(200).json(posts);
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
 // Get liked posts by user
 export const getLikedPosts = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+	try {
+		const user = await User.findById(req.params.id);
+		if (!user) return res.status(404).json({ message: "User not found" });
 
-    const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
-      .sort({ createdAt: -1 })
-      .populate("user", "-password")
-      .populate("comments.user", "-password")
-      .populate({
-        path: "repostOf",
-        populate: [
-          { path: "user", select: "-password" },
-          { path: "comments.user", select: "-password" },
-        ],
-      });
+		const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
+			.sort({ createdAt: -1 })
+			.populate("user", "-password")
+			.populate("comments.user", "-password")
+			.populate({
+				path: "repostOf",
+				populate: [
+					{ path: "user", select: "-password" },
+					{ path: "comments.user", select: "-password" },
+				],
+			});
 
-    return res.status(200).json(likedPosts);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(200).json(likedPosts);
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
 // Get bookmarked posts by user
 export const getBookmarkedPosts = async (req, res) => {
-  try {
+	try {
+		const user = await User.findById(req.params.id);
 
-    const user = await User.findById(req.params.id);
+		if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) return res.status(404).json({ message: "User not found"});
+		const bookmarkedPosts = await Post.find({ _id: { $in: user.bookmarkedPosts } })
+			.sort({ createdAt: -1 })
+			.populate("user", "-password")
+			.populate("comments.user", "-password")
+			.populate({
+				path: "repostOf",
+				populate: [
+					{ path: "user", select: "-password" },
+					{ path: "comments.user", select: "-password" },
+				],
+			});
 
-    const bookmarkedPosts = await Post.find({ _id: { $in: user.bookmarkedPosts}})
-      .sort({ createdAt: -1 })
-      .populate("user", "-password")
-      .populate("comments.user", "-password")
-      .populate({
-        path: "repostOf",
-        populate: [
-          { path: "user", select: "-password" },
-          { path: "comments.user", select: "-password" },
-        ],
-      });
-
-    return res.status(200).json(bookmarkedPosts);
-    
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message
-    })
-  }
-}
+		return res.status(200).json(bookmarkedPosts);
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
+};
 
 // Get posts from followed users
 export const getFollowingPosts = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+	try {
+		const user = await User.findById(req.user._id);
+		if (!user) return res.status(404).json({ message: "User not found" });
 
-    const feedPosts = await Post.find({ user: { $in: user.following } })
-      .sort({ createdAt: -1 })
-      .populate("user", "-password")
-      .populate("comments.user", "-password")
-      .populate({
-        path: "repostOf",
-        populate: [
-          { path: "user", select: "-password" },
-          { path: "comments.user", select: "-password" },
-        ],
-      });
+		const feedPosts = await Post.find({ user: { $in: user.following } })
+			.sort({ createdAt: -1 })
+			.populate("user", "-password")
+			.populate("comments.user", "-password")
+			.populate({
+				path: "repostOf",
+				populate: [
+					{ path: "user", select: "-password" },
+					{ path: "comments.user", select: "-password" },
+				],
+			});
 
-    return res.status(200).json(feedPosts);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(200).json(feedPosts);
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
 // Get posts by username
 export const getUserPosts = async (req, res) => {
-  try {
-    const user = await User.findOne({ username: req.params.username });
-    if (!user) return res.status(404).json({ message: "User not found" });
+	try {
+		const user = await User.findOne({ username: req.params.username });
+		if (!user) return res.status(404).json({ message: "User not found" });
 
-    const posts = await Post.find({ user: user._id })
-      .sort({ createdAt: -1 })
-      .populate("user", "-password")
-      .populate("comments.user", "-password")
-      .populate({
-        path: "repostOf",
-        populate: [
-          { path: "user", select: "-password" },
-          { path: "comments.user", select: "-password" },
-        ],
-      });
+		const posts = await Post.find({ user: user._id })
+			.sort({ createdAt: -1 })
+			.populate("user", "-password")
+			.populate("comments.user", "-password")
+			.populate({
+				path: "repostOf",
+				populate: [
+					{ path: "user", select: "-password" },
+					{ path: "comments.user", select: "-password" },
+				],
+			});
 
-    return res.status(200).json(posts);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(200).json(posts);
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
 
 // Repost a post
 export const rePost = async (req, res) => {
-  try {
-    
-    const { text } = req.body;
-    const postId = req.params.id;
-    const userId = req.user._id;
+	try {
+		const { text } = req.body;
+		const postId = req.params.id;
+		const userId = req.user._id;
 
-    // Find the post to repost
-    let repostOf = await Post.findById(postId);
-    if (!repostOf) return res.status(404).json({ message: "Post not found" });
+		// Find the post to repost
+		let repostOf = await Post.findById(postId);
+		if (!repostOf) return res.status(404).json({ message: "Post not found" });
 
-    // If reposting a repost, point to the original
-    if (repostOf.isRepost && repostOf.repostOf) {
-      repostOf = await Post.findById(repostOf.repostOf);
-      if (!repostOf) return res.status(404).json({ message: "Original post not found" });
-    }
+		// If reposting a repost, point to the original
+		if (repostOf.isRepost && repostOf.repostOf) {
+			repostOf = await Post.findById(repostOf.repostOf);
+			if (!repostOf) return res.status(404).json({ message: "Original post not found" });
+		}
 
-    // Create the repost as a new Post document
-    const repost = new Post({
-      text: text || "",
-      user: userId,
-      repostOf: repostOf._id,
-      isRepost: true,
-    });
+		// Create the repost as a new Post document
+		const repost = new Post({
+			text: text || "",
+			user: userId,
+			repostOf: repostOf._id,
+			isRepost: true,
+		});
 
-    await repost.save();
+		await repost.save();
 
-    // Populate user and repostOf for frontend convenience
-    await repost.populate("user", "-password");
-    await repost.populate({
-      path: "repostOf",
-      populate: [
-        { path: "user", select: "-password" },
-        { path: "comments.user", select: "-password" },
-      ],
-    });
+		// Populate user and repostOf for frontend convenience
+		await repost.populate("user", "-password");
+		await repost.populate({
+			path: "repostOf",
+			populate: [
+				{ path: "user", select: "-password" },
+				{ path: "comments.user", select: "-password" },
+			],
+		});
 
-     // Notify the parent post owner (if not same user)
-    if (repostOf.user.toString() !== userId.toString()) {
-      const notification = new Notification({
-        from: userId,
-        to: repostOf.user,
-        type: "repost",
-      });
-      await notification.save();
-    }
+		// Notify the parent post owner (if not same user)
+		if (repostOf.user.toString() !== userId.toString()) {
+			const notification = new Notification({
+				from: userId,
+				to: repostOf.user,
+				type: "repost",
+			});
+			await notification.save();
+		}
 
-    return res.status(201).json({
-      message: "Post reposted successfully",
-      repost,
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error!",
-      error: error.message,
-    });
-  }
+		return res.status(201).json({
+			message: "Post reposted successfully",
+			repost,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			message: "Internal server error!",
+			error: error.message,
+		});
+	}
 };
