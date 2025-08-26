@@ -26,6 +26,7 @@ export const signup = async (req, res) => {
 
     // Simple email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
@@ -47,6 +48,14 @@ export const signup = async (req, res) => {
     if (password.length < 6) {
       return res.status(400).json({ error: "Password must be at least 6 characters long" });
     }
+
+    if (!username) {
+      return res.status(400).json({ error: "You must enter a username" });
+    }
+
+    if (!fullName) {
+      return res.status(400).json({ error: "You must enter your full name" });
+    }  
 
     // Hash password with salt
     const hashedPassword = await bcrypt.hash(password, 10);

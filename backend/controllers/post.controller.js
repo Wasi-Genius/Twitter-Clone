@@ -73,6 +73,10 @@ export const commentOnPost = async (req, res) => {
       return res.status(400).json({ message: "Text is required for comment" });
     }
 
+    if (text.length > 2000) {
+      return res.status(400).json({ error: "Comments cannot be more than 2000 characters in length" });
+    }
+
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
