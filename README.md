@@ -1,4 +1,4 @@
-# Twitter Clone 🚀
+# Twitter Clone (Wasi Genius) 🚀
 
 A full-stack, production-grade Twitter Clone built with modern web technologies. This project demonstrates advanced skills in scalable backend development, responsive frontend engineering, authentication, real-time features, and clean code architecture.
 
