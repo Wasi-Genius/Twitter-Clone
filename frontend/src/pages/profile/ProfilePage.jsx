@@ -334,7 +334,8 @@ const ProfilePage = () => {
 									{profileModalType === "following" ? "Following:" : "Followers:"}
 								</h3>
 								<div className="flex flex-col gap-3 max-h-80 overflow-auto">
-									{(profileModalType === "following" ? user.following : user.followers).length === 0 ? (
+									{(profileModalType === "following" ? user.following : user.followers).length ===
+									0 ? (
 										<p className="text-sm text-slate-500">
 											{profileModalType === "following"
 												? "Not following anyone at the moment."

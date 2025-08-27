@@ -39,6 +39,10 @@ export const signup = async (req, res) => {
 			return res.status(400).json({ error: "Username already exists" });
 		}
 
+		if (username.length > 30) {
+			return res.status(400).json({ error: "Your username is too long" });
+		}
+
 		if (existingEmail) {
 			return res.status(400).json({ error: "Email is already taken" });
 		}
@@ -49,6 +53,10 @@ export const signup = async (req, res) => {
 
 		if (!username) {
 			return res.status(400).json({ error: "You must enter a username" });
+		}
+
+		if (fullName.length > 30) {
+			return res.status(400).json({ error: "You name is too long" });
 		}
 
 		if (!fullName) {

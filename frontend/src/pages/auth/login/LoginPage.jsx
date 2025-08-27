@@ -9,7 +9,7 @@ import { MdOutlineMail, MdPassword } from "react-icons/md";
 /*
  * Login page for Evermore.
  * Handles user authentication and updates global auth state.
-*/
+ */
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({ username: "", password: "" });
@@ -68,9 +68,7 @@ const LoginPage = () => {
 			<div className="flex-1 flex flex-col justify-center items-center">
 				<form className="flex gap-4 flex-col" onSubmit={handleSubmit}>
 					<SunCloudLogo className="w-24 lg:hidden fill-white" />
-					<h1 className="text-4xl font-extrabold text-white">
-						Login to Evermore.
-					</h1>
+					<h1 className="text-4xl font-extrabold text-white">Login to Evermore.</h1>
 
 					{/* Username */}
 					<label className="input input-bordered rounded flex items-center gap-2">
@@ -105,9 +103,7 @@ const LoginPage = () => {
 
 					{/* Error Message */}
 					{isError && (
-						<p className="text-red-500">
-							{error.message || "An error occurred during login."}
-						</p>
+						<p className="text-red-500">{error.message || "An error occurred during login."}</p>
 					)}
 				</form>
 

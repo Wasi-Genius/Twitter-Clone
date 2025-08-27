@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 /*
  * Custom hook to update the authenticated user's profile.
  * Handles API request, success/error notifications, and cache invalidation.
-*/
+ */
 
 const useUpdateUserProfile = () => {
 	const queryClient = useQueryClient();
@@ -31,14 +31,12 @@ const useUpdateUserProfile = () => {
 
 			// Invalidate all queries that depend on updated user data
 			const queriesToInvalidate = [
-				["authUser"],     // Updates logged-in user's info
-				["userProfile"],  // Updates profile view page
+				["authUser"], // Updates logged-in user's info
+				["userProfile"], // Updates profile view page
 			];
 
 			Promise.all(
-				queriesToInvalidate.map((queryKey) =>
-					queryClient.invalidateQueries({ queryKey })
-				)
+				queriesToInvalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey }))
 			);
 		},
 
