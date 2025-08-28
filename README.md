@@ -15,7 +15,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 
 ---
 
-## Demo
+## Overview Demo
 
 <!-- Insert a GIF or screenshot of the main feed UI -->
 
