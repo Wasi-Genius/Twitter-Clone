@@ -29,25 +29,31 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Secure JWT-based login/sign up
   - Protected routes and session management
   - Hashed passwords and password comparison using Bcrypt
+
 - **User Profiles**
   - View, edit, and update profile details
   - Upload avatar and banner images
   - View user, liked, and bookmarked posts
+
 - **Posts**
   - Create, edit, and delete posts
   - Like, comment, repost, and bookmark posts 
   - Upload viewable images
+
 - **Follow System**
   - Follow/unfollow users
   - Personalized feed based on followed users
   - Who to follow right panel system
+
 - **Notifications**
   - Real-time notifications for follows, likes, comments, and bookmarks
   - Delete one notification at a time or all notifications at once
+
 - **Responsive UI**
   - Mobile and desktop compatible design
   - Skeleton loaders for improved UX
   - Real time data fetching and UI changes
+  
 - **Utilities**
   - Date formatting
   - Custom hooks for state management
