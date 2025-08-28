@@ -19,7 +19,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 
 <!-- Insert a GIF or screenshot of the main feed UI -->
 
-![Main Feed Demo](insert-your-gif-url-here)
+![Main Feed Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/5c054761f2dfc03c70d754b2689efd6154140cb1/Read%20Me%20Assets/Overview%20Demo.gif)
 
 ---
 
