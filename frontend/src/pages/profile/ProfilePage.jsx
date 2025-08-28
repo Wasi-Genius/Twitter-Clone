@@ -71,13 +71,6 @@ const ProfilePage = () => {
 		},
 	});
 
-	useEffect(() => {
-		if (user) {
-			console.log("[ProfilePage] user profile data:", user);
-			console.log("[ProfilePage] followers array:", user.followers);
-			console.log("[ProfilePage] following array:", user.following);
-		}
-	}, [user]);
 
 	// Update profile
 	const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useMutation({
@@ -109,11 +102,6 @@ const ProfilePage = () => {
 
 		onSuccess: (updatedUser) => {
 			const username = updatedUser?.username;
-			if (!username) {
-				console.warn("[updateProfile] No username found in updated user.");
-			} else {
-				console.log(`[updateProfile] Invalidating queries for userProfile: ${username}`);
-			}
 
 			toast.success("Profile updated successfully");
 
