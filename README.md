@@ -163,7 +163,7 @@ The backend exposes RESTful endpoints for authentication, posts, users, and noti
 
 ## Contact
 
-Created by [Your Name](https://github.com/your-username)  
-Feel free to reach out via [LinkedIn](https://linkedin.com/in/your-linkedin) or email for collaboration or questions.
+Created by [Your Name](https://github.com/Wasi-Genius)  
+Feel free to reach out via [LinkedIn](https://www.linkedin.com/in/wasi-genius) or email for collaboration or questions.
 
 ---
