@@ -117,17 +117,23 @@ const NotificationPage = () => {
 						{notification.type === "comment" && <FaComment className="w-7 h-7 text-sky-500" />}
 
 						{/* Link to Profile */}
-						<Link to={`/profile/${notification.from.username}`} className="flex items-center gap-2">
+
+						<Link
+							to={notification.from ? `/profile/${notification.from.username}` : "#"}
+							className="flex items-center gap-2"
+						>
 							<div className="avatar">
 								<div className="w-8 rounded-full">
 									<img
-										src={notification.from.profileImg || "/avatar-placeholder.png"}
+										src={notification.from?.profileImg || "/avatar-placeholder.png"}
 										alt="profile"
 									/>
 								</div>
 							</div>
 							<div className="flex gap-1">
-								<span className="font-bold">@{notification.from.username}</span>
+								<span className="font-bold">
+								@{notification.from?.username || "Deleted Account"}
+								</span>
 
 								{notification.type === "follow"
 									? "followed you"
