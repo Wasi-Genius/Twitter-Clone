@@ -1,4 +1,4 @@
-# Twitter Clone (Wasi Genius) 🚀
+# Twitter Clone (Wasi Genius) 🐦
 
 A full-stack, production-level Twitter Clone built with modern web technologies. This project demonstrates advanced skills in scalable backend development, responsive frontend engineering, authentication, real-time features, and clean code architecture.
 
@@ -19,7 +19,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 
 <!-- Insert a GIF or screenshot of the main feed UI -->
 
-![Main Feed Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/5c054761f2dfc03c70d754b2689efd6154140cb1/Read%20Me%20Assets/Overview%20Demo.gif)
+![Main Feed Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/main/Read%20Me%20Assets/Overview%20Demo.gif)
 
 ---
 
@@ -147,7 +147,7 @@ JWT_SECRET=your-jwt-secret
 
 ## API Documentation
 
-The backend exposes RESTful endpoints for authentication, posts, users, and notifications. Example endpoints:
+The backend exposes RESTful endpoints for authentication, posts, users, and notifications. Sample endpoints:
 
 - `POST /api/auth/signup` - Register a new user
 - `POST /api/auth/login` - Login and receive JWT
@@ -157,13 +157,12 @@ The backend exposes RESTful endpoints for authentication, posts, users, and noti
 - `POST /api/users/:id/follow` - Follow a user
 - `GET /api/notifications` - Get notifications
 
-<!-- Add more detailed API docs or link to Postman collection if available -->
 
 ---
 
 ## Contact
 
-Created by [Your Name](https://github.com/Wasi-Genius)  
+Created by [Wasi Genius](https://github.com/Wasi-Genius)  
 Feel free to reach out via [LinkedIn](https://www.linkedin.com/in/wasi-genius) or email for collaboration or questions.
 
 ---
