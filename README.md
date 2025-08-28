@@ -26,31 +26,38 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 ## Features
 
 - **Authentication & Authorization**
-  - Secure JWT-based login/signup
+  - Secure JWT-based login/sign up
   - Protected routes and session management
+  - Hashed passwords and password comparison using Bcrypt
 - **User Profiles**
   - View, edit, and update profile details
   - Upload avatar and banner images
+  - View user, liked, and bookmarked posts
 - **Posts**
   - Create, edit, and delete posts
-  - Like and comment functionality (extendable)
+  - Like, comment, repost, and bookmark posts 
+  - Upload viewable images
 - **Follow System**
   - Follow/unfollow users
   - Personalized feed based on followed users
+  - Who to follow right panel system
 - **Notifications**
-  - Real-time notifications for follows, likes, and comments
+  - Real-time notifications for follows, likes, comments, and bookmarks
+  - Delete one notification at a time or all notifications at once
 - **Responsive UI**
-  - Mobile-first design
+  - Mobile and desktop compatible design
   - Skeleton loaders for improved UX
+  - Real time data fetching and UI changes
 - **Utilities**
   - Date formatting
   - Custom hooks for state management
+  - Seamless database integration and mutation
 
 ---
 
 ## Architecture
 
-The project is organized into a clear separation of concerns:
+The project is organized into a backend and front end:
 
 - **Backend (Node.js, Express, MongoDB)**
 
@@ -74,7 +81,7 @@ The project is organized into a clear separation of concerns:
 | Frontend  | React, Vite, CSS Modules | UI, SPA, Fast Dev Experience   |
 | Backend   | Node.js, Express         | API, Business Logic            |
 | Database  | MongoDB, Mongoose        | Data Storage & Modeling        |
-| Auth      | JWT, Custom Middleware   | Secure Authentication          |
+| Auth      | JWT, Custom Middleware, Bcrypt   | Secure Authentication          |
 | Utilities | ESLint, Custom Hooks     | Code Quality, State Management |
 
 ---
@@ -151,28 +158,6 @@ The backend exposes RESTful endpoints for authentication, posts, users, and noti
 - `GET /api/notifications` - Get notifications
 
 <!-- Add more detailed API docs or link to Postman collection if available -->
-
----
-
-## Screenshots & GIFs
-
-### Main Feed
-
-<!-- Insert GIF or screenshot -->
-
-![Main Feed](insert-your-gif-url-here)
-
-### Profile Editing
-
-<!-- Insert GIF or screenshot -->
-
-![Profile Edit](insert-your-gif-url-here)
-
-### Notifications
-
-<!-- Insert GIF or screenshot -->
-
-![Notifications](insert-your-gif-url-here)
 
 ---
 
