@@ -236,9 +236,10 @@ const Post = ({ post }) => {
 	// ----- Render -----
 	return (
 		<div className="flex gap-2 items-start p-4 border-b border-gray-700">
+
 			{/* Profile Image */}
 			<div className="avatar">
-				<Link to={`/profile/${postOwner.username}`} className="w-8 rounded-full overflow-hidden">
+				<Link to={`/profile/${postOwner.username}`} className="w-8 h-8 rounded-full overflow-hidden">
 					<img
 						src={postOwner.profileImg || "/avatar-placeholder.png"}
 						alt={`${postOwner.fullName} profile`}
