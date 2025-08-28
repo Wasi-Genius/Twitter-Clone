@@ -11,9 +11,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 - [Project Structure](#project-structure)
 - [Setup & Installation](#setup--installation)
 - [API Documentation](#api-documentation)
-- [Screenshots & GIFs](#screenshots--gifs)
-- [Contributing](#contributing)
-- [License](#license)
+- [Contact](#contact)
 
 ---
 
@@ -178,24 +176,9 @@ The backend exposes RESTful endpoints for authentication, posts, users, and noti
 
 ---
 
-## Contributing
-
-Interested in contributing? Please fork the repo and submit a pull request. For major changes, open an issue first to discuss your ideas.
-
----
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
 ## Contact
 
 Created by [Your Name](https://github.com/your-username)  
 Feel free to reach out via [LinkedIn](https://linkedin.com/in/your-linkedin) or email for collaboration or questions.
 
 ---
-
-> **Tip:** Add your GIFs/screenshots in the designated spaces to visually showcase your work.  
-> This README is designed to highlight your skills and project structure for recruiters and hiring managers.
