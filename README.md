@@ -30,6 +30,12 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 
 ![Authentication & Authorization Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/main/Read%20Me%20Assets/Authentication%20%26%20Authorization%20Demo.mp4)
 
+
+
+https://github.com/user-attachments/assets/6717ca30-4136-4f25-855c-3b3caf0e2eee
+
+
+
 - **User Profiles**
   - View, edit, and update profile details
   - Upload avatar and banner images
