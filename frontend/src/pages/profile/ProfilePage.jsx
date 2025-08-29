@@ -9,7 +9,6 @@ import EditProfileModal from "./EditProfileModal";
 
 import { formatMemberSinceDate } from "../../utils/date/dateTools.js";
 import useFollow from "../../hooks/userFollow";
-import RightPanel from "../../components/common/RightPanel.jsx";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -71,7 +70,6 @@ const ProfilePage = () => {
 		},
 	});
 
-
 	// Update profile
 	const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useMutation({
 		mutationFn: async () => {
@@ -109,6 +107,9 @@ const ProfilePage = () => {
 				queryClient.invalidateQueries({ queryKey: ["authUser"] }),
 				queryClient.invalidateQueries({
 					queryKey: ["userProfile", username],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ["posts"],
 				}),
 			]);
 		},

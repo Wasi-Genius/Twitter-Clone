@@ -17,8 +17,6 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 
 ## Overview Demo
 
-<!-- Insert a GIF or screenshot of the main feed UI -->
-
 ![Main Feed Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/main/Read%20Me%20Assets/Overview%20Demo%20Gif.gif)
 
 ---
@@ -29,6 +27,9 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Secure JWT-based login/sign up
   - Protected routes and session management
   - Hashed passwords and password comparison using Bcrypt
+
+![Authentication & Authorization Demo]()
+
 
 - **User Profiles**
   - View, edit, and update profile details
