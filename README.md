@@ -41,6 +41,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 - **Posts**
   - Create and delete posts
   - Like, comment, repost, and bookmark posts 
+    - Delete comments and undo bookmarks and likes
   - Upload viewable images
 
 ![Posts Demo]()
@@ -56,6 +57,8 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 - **Notifications**
   - Real-time notifications for follows, likes, comments, and bookmarks
   - Delete one notification at a time or all notifications at once
+
+![Notifications Demo]()
 
 - **Responsive UI**
   - Mobile and desktop compatible design
