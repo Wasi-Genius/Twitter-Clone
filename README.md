@@ -64,6 +64,8 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Mobile and desktop compatible design
   - Skeleton loaders for improved UX
   - Real time data fetching and UI changes
+
+![Responsive UI]()
   
 - **Utilities**
   - Date formatting
