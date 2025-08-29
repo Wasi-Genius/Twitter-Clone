@@ -28,7 +28,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Protected routes and session management
   - Hashed passwords and password comparison using Bcrypt
 
-![Authentication & Authorization Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/1ea95ae76894631be68b6107685e42ee6ecbd0bc/Read%20Me%20Assets/Authentication%20%26%20Authorization%20Demo.mp4)
+![Authentication & Authorization Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/main/Read%20Me%20Assets/Authentication%20%26%20Authorization%20Demo.mp4)
 
 - **User Profiles**
   - View, edit, and update profile details
