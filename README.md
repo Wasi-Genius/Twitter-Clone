@@ -48,7 +48,10 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 - **Follow System**
   - Follow/unfollow users
   - Personalized feed based on followed users
-  - Who to follow right panel system
+  - Who to follow panel 
+  - View followers and following
+
+![Follow System Demo]()
 
 - **Notifications**
   - Real-time notifications for follows, likes, comments, and bookmarks
