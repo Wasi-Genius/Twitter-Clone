@@ -36,10 +36,14 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Upload avatar and banner images
   - View user, liked, and bookmarked posts
 
+![User Profile Demo]()
+
 - **Posts**
-  - Create, edit, and delete posts
+  - Create and delete posts
   - Like, comment, repost, and bookmark posts 
   - Upload viewable images
+
+![Posts Demo]()
 
 - **Follow System**
   - Follow/unfollow users
