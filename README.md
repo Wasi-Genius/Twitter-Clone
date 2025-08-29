@@ -28,7 +28,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Protected routes and session management
   - Hashed passwords and password comparison using Bcrypt
 
-![Authentication & Authorization Demo](https://github.com/user-attachments/assets/6717ca30-4136-4f25-855c-3b3caf0e2eee)
+(https://github.com/user-attachments/assets/6717ca30-4136-4f25-855c-3b3caf0e2eee)
 
 - **User Profiles**
   - View, edit, and update profile details
