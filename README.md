@@ -28,14 +28,14 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Protected routes and session management
   - Hashed passwords and password comparison using Bcrypt
 
-![Authentication & Authorization Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/main/Read%20Me%20Assets/Authentication%20%26%20Authorization%20Demo.mp4)
+https://github.com/user-attachments/assets/e4fc274e-8ca0-4e19-a243-566fa8341f99
 
 - **User Profiles**
   - View, edit, and update profile details
   - Upload avatar and banner images
   - View user, liked, and bookmarked posts
 
-![User Profile Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/1ea95ae76894631be68b6107685e42ee6ecbd0bc/Read%20Me%20Assets/User%20Profiles%20Demo.mp4)
+https://github.com/user-attachments/assets/d5eea438-984d-49de-b9c5-e32d22d1b032
 
 - **Posts**
   - Create and delete posts
@@ -43,7 +43,7 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
     - Delete comments and undo bookmarks and likes
   - Upload viewable images
 
-![Posts Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/1ea95ae76894631be68b6107685e42ee6ecbd0bc/Read%20Me%20Assets/Posts%20Demo.mp4)
+https://github.com/user-attachments/assets/f16bbb3b-2cb6-4192-ae29-f3b0b9d332f3
 
 - **Follow System**
   - Follow/unfollow users
@@ -51,21 +51,21 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
   - Who to follow panel 
   - View followers and following
 
-![Follow System Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/1ea95ae76894631be68b6107685e42ee6ecbd0bc/Read%20Me%20Assets/Follow%20System%20Demo.mp4)
+https://github.com/user-attachments/assets/31719900-211d-4d77-a59e-30c647f455b6
 
 - **Notifications**
   - Real-time notifications for follows, likes, comments, and bookmarks
   - Delete one notification at a time or all notifications at once
 
-![Notifications Demo](https://github.com/Wasi-Genius/Twitter-Clone/blob/1ea95ae76894631be68b6107685e42ee6ecbd0bc/Read%20Me%20Assets/Notifications%20Demo.mp4)
+https://github.com/user-attachments/assets/f6e8d0e9-54b4-4404-be8b-282392518321
 
 - **Responsive UI**
   - Mobile and desktop compatible design
   - Skeleton loaders for improved UX
   - Real time data fetching and UI changes
 
-![Responsive UI](https://github.com/Wasi-Genius/Twitter-Clone/blob/1ea95ae76894631be68b6107685e42ee6ecbd0bc/Read%20Me%20Assets/Responsive%20UI%20Demo.mp4)
-  
+https://github.com/user-attachments/assets/3a4b3a7a-e786-4c01-a518-94bafcea76de
+
 - **Utilities**
   - Date formatting
   - Custom hooks for state management
