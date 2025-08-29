@@ -30,12 +30,16 @@ A full-stack, production-level Twitter Clone built with modern web technologies.
 
 https://github.com/user-attachments/assets/e4fc274e-8ca0-4e19-a243-566fa8341f99
 
+</br>
+
 - **User Profiles**
   - View, edit, and update profile details
   - Upload avatar and banner images
   - View user, liked, and bookmarked posts
 
 https://github.com/user-attachments/assets/d5eea438-984d-49de-b9c5-e32d22d1b032
+
+</br>
 
 - **Posts**
   - Create and delete posts
@@ -45,6 +49,8 @@ https://github.com/user-attachments/assets/d5eea438-984d-49de-b9c5-e32d22d1b032
 
 https://github.com/user-attachments/assets/f16bbb3b-2cb6-4192-ae29-f3b0b9d332f3
 
+</br>
+
 - **Follow System**
   - Follow/unfollow users
   - Personalized feed based on followed users
@@ -53,11 +59,15 @@ https://github.com/user-attachments/assets/f16bbb3b-2cb6-4192-ae29-f3b0b9d332f3
 
 https://github.com/user-attachments/assets/31719900-211d-4d77-a59e-30c647f455b6
 
+</br>
+
 - **Notifications**
   - Real-time notifications for follows, likes, comments, and bookmarks
   - Delete one notification at a time or all notifications at once
 
 https://github.com/user-attachments/assets/f6e8d0e9-54b4-4404-be8b-282392518321
+
+</br>
 
 - **Responsive UI**
   - Mobile and desktop compatible design
@@ -65,6 +75,8 @@ https://github.com/user-attachments/assets/f6e8d0e9-54b4-4404-be8b-282392518321
   - Real time data fetching and UI changes
 
 https://github.com/user-attachments/assets/3a4b3a7a-e786-4c01-a518-94bafcea76de
+
+</br>
 
 - **Utilities**
   - Date formatting
