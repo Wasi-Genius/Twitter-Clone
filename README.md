@@ -53,9 +53,9 @@ https://github.com/user-attachments/assets/f16bbb3b-2cb6-4192-ae29-f3b0b9d332f3
 
 - **Follow System**
   - Follow/unfollow users
+  - View followers and following
   - Personalized feed based on followed users
   - Who to follow panel 
-  - View followers and following
 
 https://github.com/user-attachments/assets/31719900-211d-4d77-a59e-30c647f455b6
 
