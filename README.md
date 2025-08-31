@@ -171,6 +171,9 @@ Create a `.env` file in `backend/`:
 ```
 MONGODB_URI=your-mongodb-uri
 JWT_SECRET=your-jwt-secret
+CLOUDINARY_CLOUD_NAME=your-cloudinary-name
+CLOUDINARY_API_KEY=6=your-cloudinary-api-key
+ClOUDINARY_API_SECRET=your-cloudinary-api-secret
 ```
 
 ---
