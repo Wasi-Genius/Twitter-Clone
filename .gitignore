@@ -1,25 +1,87 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+
+# =========================
+# Build output
+# =========================
+dist/
+build/
+coverage/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
 # Logs
-logs
+# =========================
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# Cache / temporary files
+# =========================
+.cache/
+.temp/
+tmp/
+*.tsbuildinfo
 
-# Editor directories and files
+# =========================
+# Vite
+# =========================
+vite.svg
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE / Editor
+# =========================
 .vscode/*
 !.vscode/extensions.json
-*.idea
-*.env
-*.DS_Store
+.idea/
 *.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+*.swp
+*.swo
+
+# =========================
+# Testing
+# =========================
+coverage/
+playwright-report/
+test-results/
+
+# =========================
+# Uploads / generated media
+# =========================
+uploads/
+public/uploads/
+
+# =========================
+# MongoDB
+# =========================
+dump/
+mongodb-data/
+
+# =========================
+# Deployment
+# =========================
+.vercel/
+.netlify/
+
+# =========================
+# Security
+# =========================
+*.pem
