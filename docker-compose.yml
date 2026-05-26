@@ -1,4 +1,12 @@
 services:
+
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
   backend:
     build: ./backend
     ports:
@@ -8,6 +16,10 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      - db
+    environment:
+      - MONGO_URI=mongodb://db:27017/Twitter-Clone-DB
 
   frontend:
     build: ./frontend
@@ -18,3 +30,6 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+
+volumes:
+  mongo-data:
