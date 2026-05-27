@@ -1,6 +1,6 @@
-# Twitter Clone (Wasi Genius) 🐦
+# Evermore (Wasi Genius) 🐦
 
-A full-stack, production-level Twitter Clone built with modern web technologies. This project demonstrates advanced skills in scalable backend development, responsive frontend engineering, authentication, real-time features, and clean code architecture.
+A full-stack, production-level social media site built with modern web technologies. This project demonstrates advanced skills in scalable backend development, responsive frontend engineering, authentication, real-time features, and clean code architecture.
 
 ## Table of Contents
 
@@ -119,7 +119,7 @@ The project is organized into a backend and front end:
 ## Project Structure
 
 ```
-Twitter-Clone/
+Evermore/
 ├── backend/
 │   ├── controllers/        # API logic
 │   ├── db/                 # DB connection
