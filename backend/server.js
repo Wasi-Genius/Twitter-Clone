@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
 import path from "path";
+import cors from 'cors';
 
 //Routes
 import authRoutes from "./routes/auth.routes.js";
@@ -22,7 +23,6 @@ cloudinary.config({
 });
 
 // Initialize express app and connect to MongoDB
-const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
