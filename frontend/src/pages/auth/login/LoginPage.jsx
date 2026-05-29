@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
+
 import SunCloudLogo from "../../../components/svgs/SunCloud.jsx";
 import { MdOutlineMail, MdPassword } from "react-icons/md";
+
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 /*
  * Login page for Evermore.
@@ -24,7 +27,7 @@ const LoginPage = () => {
 		error,
 	} = useMutation({
 		mutationFn: async ({ username, password }) => {
-			const res = await fetch("/api/auth/login", {
+			const res = await fetch(`${API_URL}/api/auth/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ username, password }),
