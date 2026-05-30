@@ -107,14 +107,19 @@ export const login = async (req, res) => {
 
 //Logout current user
 export const logout = async (req, res) => {
-	try {
-		// Clear JWT cookie
-		res.cookie("jwt", "", { maxAge: 0 });
-		res.status(200).json({ message: "Logged out successfully" });
-	} catch (error) {
-		console.error("Error during logout:", error);
-		res.status(500).json({ error: "Internal server error" });
-	}
+    try {
+        // You must match the production settings to clear it properly
+        res.cookie("jwt", "", { 
+            maxAge: 0,
+            httpOnly: true,
+            sameSite: "none", 
+            secure: true 
+        });
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.error("Error during logout:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 // Get current logged-in user's profile
