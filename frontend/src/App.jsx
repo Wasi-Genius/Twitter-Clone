@@ -12,12 +12,16 @@ import SideBar from "./components/common/Sidebar";
 import RightPanel from "./components/common/RightPanel";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 function App() {
 	// Query to fetch the currently authenticated user
 	const { data: authUser, isLoading } = useQuery({
 		queryKey: ["authUser"],
 		queryFn: async () => {
-			const res = await fetch("/api/auth/me");
+			const res = await fetch(`${API_URL}/api/auth/me`, {
+				credentials: "include",
+			});
 			const data = await res.json();
 
 			// If backend sends an error in JSON response, treat as unauthenticated

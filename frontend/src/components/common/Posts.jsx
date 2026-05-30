@@ -3,6 +3,8 @@ import PostSkeleton from "../skeletons/PostSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 const Posts = ({ feedType, username, userId }) => {
 	// Memoize endpoint to avoid recalculating on every render unless dependencies change
 	const POST_ENDPOINT = useMemo(() => {
@@ -29,7 +31,9 @@ const Posts = ({ feedType, username, userId }) => {
 	} = useQuery({
 		queryKey: ["posts", feedType, username, userId], // include params to avoid stale cache
 		queryFn: async () => {
-			const res = await fetch(POST_ENDPOINT);
+			const res = await fetch(`${API_URL}${POST_ENDPOINT}`, {
+				credentials: "include",
+			});
 			const data = await res.json();
 
 			if (!res.ok) {

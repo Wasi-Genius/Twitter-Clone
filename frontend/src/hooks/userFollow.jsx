@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 
 /*
 
@@ -13,8 +15,9 @@ const useFollow = () => {
 	const { mutate: follow, isPending } = useMutation({
 		// --- API Call ---
 		mutationFn: async (userId) => {
-			const res = await fetch(`/api/users/follow/${userId}`, {
+			const res = await fetch(`${API_URL}/api/users/follow/${userId}`, {
 				method: "POST",
+				credentials: "include",
 			});
 
 			const data = await res.json();

@@ -8,6 +8,7 @@ import { BiRepost } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import { formatPostDate } from "../../utils/date/dateTools";
 import { useEffect } from "react";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 const NotificationPage = () => {
 	const queryClient = useQueryClient();
@@ -18,7 +19,9 @@ const NotificationPage = () => {
 	const { data, isLoading } = useQuery({
 		queryKey: ["notifications"],
 		queryFn: async () => {
-			const res = await fetch("/api/notifications");
+			const res = await fetch(`${API_URL}/api/notifications`, {
+				credentials: "include",
+			});
 			const json = await res.json();
 
 			if (!res.ok) throw new Error(json.error || "Failed to fetch notifications");
@@ -36,7 +39,10 @@ const NotificationPage = () => {
 	 */
 	const { mutate: deleteNotifications } = useMutation({
 		mutationFn: async () => {
-			const res = await fetch("/api/notifications", { method: "DELETE" });
+			const res = await fetch(`${API_URL}/api/notifications`, {
+				method: "DELETE",
+				credentials: "include",
+			});
 			const json = await res.json();
 
 			if (!res.ok) throw new Error(json.error || "Failed to delete notifications");
@@ -55,7 +61,10 @@ const NotificationPage = () => {
 	 */
 	const { mutate: deleteNotificationById } = useMutation({
 		mutationFn: async (id) => {
-			const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
+			const res = await fetch(`${API_URL}/api/notifications/${id}`, {
+				method: "DELETE",
+				credentials: "include",
+			});
 			const json = await res.json();
 
 			if (!res.ok) throw new Error(json.error || "Failed to delete notification");

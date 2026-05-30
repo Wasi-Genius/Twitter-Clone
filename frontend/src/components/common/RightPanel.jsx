@@ -5,10 +5,14 @@ import LoadingSpinner from "./LoadingSpinner";
 import useFollow from "../../hooks/userFollow";
 import { useEffect } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 // Fetch helpers
 const fetchSuggestedUsers = async () => {
 	try {
-		const res = await fetch("/api/users/suggested");
+		const res = await fetch(`${API_URL}/api/users/suggested`, {
+			credentials: "include",
+		});
 		const data = await res.json();
 
 		if (!res.ok) {
@@ -28,7 +32,9 @@ const RightPanel = () => {
 	const { data: authUser } = useQuery({
 		queryKey: ["authUser"],
 		queryFn: async () => {
-			const res = await fetch("/api/auth/me");
+			const res = await fetch(`${API_URL}/api/auth/me`, {
+				credentials: "include",
+			});
 			if (!res.ok) throw new Error("Failed to fetch auth user");
 			return res.json();
 		},

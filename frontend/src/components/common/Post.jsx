@@ -10,14 +10,18 @@ import { formatPostDate } from "../../utils/date/dateTools";
 
 import { useEffect } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
+
 /**
  * Utility function for API requests.
  */
 const apiRequest = async (url, method = "GET", body) => {
-	const res = await fetch(url, {
+	const res = await fetch(`${API_URL}${url}`, {
 		method,
 		headers: body ? { "Content-Type": "application/json" } : undefined,
 		body: body ? JSON.stringify(body) : undefined,
+		credentials: "include",
 	});
 	const data = await res.json();
 	if (!res.ok) throw new Error(data.error || data.message || "Something went wrong");
@@ -80,7 +84,9 @@ const Post = ({ post }) => {
 	const { data: authUser } = useQuery({
 		queryKey: ["authUser"],
 		queryFn: async () => {
-			const res = await fetch("/api/auth/me");
+			const res = await fetch(`${API_URL}/api/auth/me`, {
+				credentials: "include",
+			});
 			if (!res.ok) throw new Error("Failed to fetch auth user");
 			return res.json();
 		},
@@ -154,7 +160,10 @@ const Post = ({ post }) => {
 	// Delete a comment
 	const { mutate: deleteComment } = useMutation({
 		mutationFn: async (commentId) => {
-			const res = await fetch(`/api/posts/comment/${post._id}/${commentId}`, { method: "DELETE" });
+			const res = await fetch(`${API_URL}/api/posts/comment/${post._id}/${commentId}`, {
+				method: "DELETE",
+				credentials: "include",
+			});
 
 			const json = await res.json();
 

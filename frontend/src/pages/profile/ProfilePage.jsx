@@ -18,6 +18,8 @@ import { MdEdit } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 const ProfilePage = () => {
 	// ---------------------- State ----------------------
 	const [bannerImg, setCoverImg] = useState(null);
@@ -42,7 +44,9 @@ const ProfilePage = () => {
 	const { data: authUser } = useQuery({
 		queryKey: ["authUser"],
 		queryFn: async () => {
-			const res = await fetch("/api/auth/me");
+			const res = await fetch(`${API_URL}/api/auth/me`, {
+				credentials: "include",
+			});
 			if (!res.ok) throw new Error("Failed to fetch auth user");
 			return res.json();
 		},
@@ -58,7 +62,9 @@ const ProfilePage = () => {
 		queryKey: ["userProfile", username],
 		queryFn: async () => {
 			try {
-				const res = await fetch(`/api/users/profile/${username}`);
+				const res = await fetch(`${API_URL}/api/users/profile/${username}`, {
+					credentials: "include",
+				});
 				const data = await res.json();
 
 				if (!res.ok) throw new Error(data.error || "Failed to fetch user profile");
@@ -74,8 +80,9 @@ const ProfilePage = () => {
 	const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useMutation({
 		mutationFn: async () => {
 			try {
-				const res = await fetch(`/api/users/update`, {
+				const res = await fetch(`${API_URL}/api/users/update`, {
 					method: "POST",
+					credentials: "include",
 					headers: {
 						"Content-Type": "application/json",
 					},

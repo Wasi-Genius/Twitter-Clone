@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 /*
  * Custom hook to update the authenticated user's profile.
@@ -12,8 +13,9 @@ const useUpdateUserProfile = () => {
 	const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useMutation({
 		// --- API Request ---
 		mutationFn: async (formData) => {
-			const res = await fetch(`/api/users/update`, {
+			const res = await fetch(`${API_URL}/api/users/update`, {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(formData),
 			});
