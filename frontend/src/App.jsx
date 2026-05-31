@@ -29,7 +29,7 @@ function App() {
 
 			// Handle failed response (non-2xx status)
 			if (!res.ok) {
-				throw new Error(data.error || "Failed to fetch user data");
+				throw new Error(data.message || data.error || "Failed to fetch user data");
 			}
 
 			return data;

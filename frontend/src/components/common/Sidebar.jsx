@@ -28,7 +28,7 @@ const Sidebar = () => {
 				credentials: "include",
 			});
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.error || "Something went wrong");
+			if (!res.ok) throw new Error(data.message || data.error || "Something went wrong");
 		},
 		onSuccess: () => {
 			// Remove cached auth user so UI updates immediately

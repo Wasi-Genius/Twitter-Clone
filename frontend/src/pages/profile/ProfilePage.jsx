@@ -67,7 +67,7 @@ const ProfilePage = () => {
 				});
 				const data = await res.json();
 
-				if (!res.ok) throw new Error(data.error || "Failed to fetch user profile");
+				if (!res.ok) throw new Error(data.message || data.error || "Failed to fetch user profile");
 
 				return data;
 			} catch (error) {
@@ -95,7 +95,7 @@ const ProfilePage = () => {
 				const data = await res.json();
 
 				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+					throw new Error(data.message || data.error || "Something went wrong");
 				}
 
 				return data;

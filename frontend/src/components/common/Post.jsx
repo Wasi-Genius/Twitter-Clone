@@ -24,7 +24,9 @@ const apiRequest = async (url, method = "GET", body) => {
 		credentials: "include",
 	});
 	const data = await res.json();
-	if (!res.ok) throw new Error(data.error || data.message || "Something went wrong");
+
+	if (!res.ok) throw new Error(data.message || data.error || "Something went wrong");
+	
 	return data;
 };
 
